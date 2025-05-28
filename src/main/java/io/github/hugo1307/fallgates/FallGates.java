@@ -10,6 +10,7 @@ import dev.hugog.minecraft.dev_command.integration.Integration;
 import io.github.hugo1307.fallgates.config.ConfigHandler;
 import io.github.hugo1307.fallgates.data.cache.KeyValueCache;
 import io.github.hugo1307.fallgates.injection.PluginBinderModule;
+import io.github.hugo1307.fallgates.messages.MessageService;
 import io.github.hugo1307.fallgates.services.GateService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.utils.PluginValidationConfiguration;
@@ -25,6 +26,8 @@ public final class FallGates extends JavaPlugin {
     private GateService gateService;
     @Inject
     private SchematicsService schematicsService;
+    @Inject
+    private MessageService messageService;
 
     @Inject
     private KeyValueCache keyValueCache;
@@ -64,7 +67,7 @@ public final class FallGates extends JavaPlugin {
         CommandHandler commandHandler = devCommand.getCommandHandler();
 
         commandHandler.initCommandsAutoConfiguration(pluginDevCommandsIntegration);
-        commandHandler.useAutoValidationConfiguration(new PluginValidationConfiguration());
+        commandHandler.useAutoValidationConfiguration(new PluginValidationConfiguration(messageService));
     }
 
     private void registerCommandsDependencies() {
@@ -76,9 +79,11 @@ public final class FallGates extends JavaPlugin {
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, this);
 
         // Services
+        dependencyHandler.registerDependency(pluginDevCommandsIntegration, messageService);
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, gateService);
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, schematicsService);
-        
+
+        // Cache
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, keyValueCache);
     }
 

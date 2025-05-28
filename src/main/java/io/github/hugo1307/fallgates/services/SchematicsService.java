@@ -11,7 +11,6 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import io.github.hugo1307.fallgates.FallGates;
 import io.github.hugo1307.fallgates.data.domain.FallGateSchematic;
@@ -78,10 +77,11 @@ public final class SchematicsService {
         }
 
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(location.getWorld()))) {
-            Operation operation = new ClipboardHolder(schematic.getSchematicClipboard())
+            ClipboardHolder holder = new ClipboardHolder(schematic.getSchematicClipboard());
+            Operation operation = holder
                     .createPaste(editSession)
-                    .to(BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ()))
-                    .ignoreAirBlocks(true)
+                    .to(BukkitAdapter.asBlockVector(location))
+                    .ignoreAirBlocks(false)
                     .build();
             Operations.complete(operation);
         } catch (WorldEditException e) {

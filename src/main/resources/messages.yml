@@ -1,0 +1,12 @@
+general:
+  noPermission: "You do not have permission to perform this action."
+  invalidArguments: "Invalid arguments provided - §e{0} §7at position §e{1}§7."
+  invalidSender: "You must be a player to perform this action."
+
+commands:
+  build:
+    success: "Your gate has been successfully built."
+    positionSet: "Your gate position has been set. Type §e{0} §7to confirm and build your gate."
+
+  confirm:
+    noOperationPending: "You have no pending confirmation operations."
