@@ -8,6 +8,7 @@ import dev.hugog.minecraft.dev_command.commands.handler.CommandHandler;
 import dev.hugog.minecraft.dev_command.dependencies.DependencyHandler;
 import dev.hugog.minecraft.dev_command.integration.Integration;
 import io.github.hugo1307.fallgates.config.ConfigHandler;
+import io.github.hugo1307.fallgates.data.cache.KeyValueCache;
 import io.github.hugo1307.fallgates.injection.PluginBinderModule;
 import io.github.hugo1307.fallgates.services.GateService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
@@ -24,6 +25,9 @@ public final class FallGates extends JavaPlugin {
     private GateService gateService;
     @Inject
     private SchematicsService schematicsService;
+
+    @Inject
+    private KeyValueCache keyValueCache;
 
     @Override
     public void onEnable() {
@@ -74,6 +78,8 @@ public final class FallGates extends JavaPlugin {
         // Services
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, gateService);
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, schematicsService);
+        
+        dependencyHandler.registerDependency(pluginDevCommandsIntegration, keyValueCache);
     }
 
 }

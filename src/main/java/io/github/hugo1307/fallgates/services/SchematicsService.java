@@ -23,9 +23,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Singleton
 public final class SchematicsService {
+
+    private static final String SCHEMATICS_FOLDER = "schematics";
 
     private final FallGates plugin;
 
@@ -43,7 +49,7 @@ public final class SchematicsService {
     public FallGateSchematic loadSchematic(String schematicName) {
         FallGateSchematic schematic = new FallGateSchematic(schematicName);
 
-        File schematicFile = Path.of(plugin.getDataFolder().getPath(), "schematics", schematic.getFileName()).toFile();
+        File schematicFile = Path.of(plugin.getDataFolder().getPath(), SCHEMATICS_FOLDER, schematic.getFileName()).toFile();
         ClipboardFormat format = ClipboardFormats.findByFile(schematicFile);
         if (format == null) {
             throw new SchematicReadException(String.format("Unsupported schematic format for file %s.", schematicFile.getName()));
@@ -82,6 +88,24 @@ public final class SchematicsService {
             throw new SchematicPasteException(String.format("Failed to paste the Schematic %s at location %s.", schematic.getName(), location), e);
         }
 
+    }
+
+    /**
+     * Get a list of the names of all available schematics.
+     *
+     * <p>This method will return the names of all files in the schematics folder without the file extension.
+     *
+     * @return a list of names of available schematics
+     */
+    public List<String> getAvailableSchematicsNames() {
+        File schematicsFolder = new File(plugin.getDataFolder(), SCHEMATICS_FOLDER);
+        if (!schematicsFolder.exists() || !schematicsFolder.isDirectory()) {
+            return List.of(); // Return an empty list if the folder does not exist
+        }
+
+        return Stream.of(Objects.requireNonNull(schematicsFolder.list((dir, name) -> name.endsWith(".schem"))))
+                .map(name -> name.substring(0, name.lastIndexOf('.'))) // Remove the file extension
+                .collect(Collectors.toUnmodifiableList());
     }
 
 }
