@@ -1,0 +1,10 @@
+name: FallGates
+version: 0.0.1
+main: io.github.hugo1307.fallgates.FallGates
+api-version: '1.16'
+prefix: FallGates
+author: Hugo1307
+description: Create gates that teleport players when they fall through them.
+commands:
+  fg:
+    description: Plugin's main command.
