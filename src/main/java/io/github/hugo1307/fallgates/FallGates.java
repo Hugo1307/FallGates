@@ -7,7 +7,9 @@ import dev.hugog.minecraft.dev_command.commands.executors.DevCommandExecutor;
 import dev.hugog.minecraft.dev_command.commands.handler.CommandHandler;
 import dev.hugog.minecraft.dev_command.dependencies.DependencyHandler;
 import dev.hugog.minecraft.dev_command.integration.Integration;
+import io.github.hugo1307.fallgates.config.ConfigHandler;
 import io.github.hugo1307.fallgates.injection.PluginBinderModule;
+import io.github.hugo1307.fallgates.services.GateService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.utils.PluginValidationConfiguration;
 import org.bukkit.command.PluginCommand;
@@ -16,6 +18,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class FallGates extends JavaPlugin {
 
     @Inject
+    private ConfigHandler configHandler;
+
+    @Inject
+    private GateService gateService;
+    @Inject
     private SchematicsService schematicsService;
 
     @Override
@@ -23,6 +30,7 @@ public final class FallGates extends JavaPlugin {
         initDependencyInjection();
         initDevCommands();
         registerCommandsDependencies();
+        configHandler.init();
     }
 
     @Override
@@ -59,11 +67,12 @@ public final class FallGates extends JavaPlugin {
         DevCommand devCommand = DevCommand.getOrCreateInstance();
         DependencyHandler dependencyHandler = devCommand.getDependencyHandler();
         Integration pluginDevCommandsIntegration = Integration.createFromPlugin(this);
-        
+
         // Bukkit Related Stuff
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, this);
 
         // Services
+        dependencyHandler.registerDependency(pluginDevCommandsIntegration, gateService);
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, schematicsService);
     }
 

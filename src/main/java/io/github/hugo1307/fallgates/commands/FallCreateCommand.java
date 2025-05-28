@@ -5,6 +5,7 @@ import dev.hugog.minecraft.dev_command.arguments.parsers.StringArgumentParser;
 import dev.hugog.minecraft.dev_command.commands.BukkitDevCommand;
 import dev.hugog.minecraft.dev_command.commands.data.BukkitCommandData;
 import io.github.hugo1307.fallgates.data.domain.FallGateSchematic;
+import io.github.hugo1307.fallgates.services.GateService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,13 +29,13 @@ public class FallCreateCommand extends BukkitDevCommand {
     public void execute() {
 
         SchematicsService schematicsService = getDependency(SchematicsService.class);
+        GateService gateService = getDependency(GateService.class);
         Player player = (Player) getCommandSender();
         String fallGateName = ((StringArgumentParser) getArgumentParser(0)).parse().orElseThrow();
         String schematicName = ((StringArgumentParser) getArgumentParser(1)).parse().orElseThrow();
 
         FallGateSchematic fallGateSchematic = schematicsService.loadSchematic(schematicName);
         schematicsService.pasteSchematic(fallGateSchematic, player.getLocation());
-
     }
 
     @Override

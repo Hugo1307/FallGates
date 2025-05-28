@@ -1,0 +1,5 @@
+# Database configuration
+database:
+  name: "fall_gates"              # The name of the database
+  user: "root"                    # The user of the database
+  password: "admin"               # The password of the database user
