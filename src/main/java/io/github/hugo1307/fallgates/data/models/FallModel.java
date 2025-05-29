@@ -1,6 +1,6 @@
 package io.github.hugo1307.fallgates.data.models;
 
-import io.github.hugo1307.fallgates.data.domain.Gate;
+import io.github.hugo1307.fallgates.data.domain.Fall;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,11 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "gates")
+@Table(name = "falls")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class GateModel implements DataModel<Long, Gate> {
+public class FallModel implements DataModel<Long, Fall> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +23,18 @@ public class GateModel implements DataModel<Long, Gate> {
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "min_position_id", nullable = false)
-    private PositionModel minPosition;
+    @JoinColumn(name = "position_id", nullable = false)
+    private PositionModel position;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "max_position_id", nullable = false)
-    private PositionModel maxPosition;
+    @Column(name = "x_size", nullable = false)
+    private int xSize;
+
+    @Column(name = "z_size", nullable = false)
+    private int zSize;
 
     @Override
-    public Gate toDomainEntity() {
-        return new Gate(id, name, minPosition.toDomainEntity(), maxPosition.toDomainEntity());
+    public Fall toDomainEntity() {
+        return new Fall(id, name, position.toDomainEntity(), xSize, zSize);
     }
 
 }

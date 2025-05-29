@@ -4,9 +4,11 @@ general:
   invalidSender: "You must be a player to perform this action."
 
 commands:
-  build:
-    success: "Your gate has been successfully built."
-    positionSet: "Your gate position has been set. Type §e{0} §7to confirm and build your gate."
+  create:
+    success: "Your fall has been successfully created."
+    positionSet: "Your fall position has been set. Type §e{0} §7to confirm and create your fall."
+    invalidSchematic: "Invalid schematic provided §c{0}§7. Please ensure the file exists and is a valid schematic."
+    errorLoadingSchematic: "An error occurred while loading the schematic §c{0}§7."
 
   confirm:
     noOperationPending: "You have no pending confirmation operations."

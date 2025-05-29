@@ -1,4 +1,4 @@
-package io.github.hugo1307.fallgates.repositories;
+package io.github.hugo1307.fallgates.data.repositories;
 
 import io.github.hugo1307.fallgates.data.HibernateHandler;
 import io.github.hugo1307.fallgates.data.models.DataModel;

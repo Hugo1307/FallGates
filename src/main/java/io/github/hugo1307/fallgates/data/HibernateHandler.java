@@ -6,7 +6,7 @@ import com.google.inject.name.Named;
 import io.github.hugo1307.fallgates.config.ConfigHandler;
 import io.github.hugo1307.fallgates.data.databases.DatabaseConfiguration;
 import io.github.hugo1307.fallgates.data.models.DataModel;
-import io.github.hugo1307.fallgates.data.models.GateModel;
+import io.github.hugo1307.fallgates.data.models.FallModel;
 import io.github.hugo1307.fallgates.data.models.PositionModel;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -35,7 +35,7 @@ public class HibernateHandler {
         this.configHandler = configHandler;
         this.databaseConfiguration = databaseConfiguration;
         this.annotatedClasses = Set.of(
-                GateModel.class,
+                FallModel.class,
                 PositionModel.class
         );
     }

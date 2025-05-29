@@ -3,6 +3,7 @@ package io.github.hugo1307.fallgates.messages;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.hugo1307.fallgates.FallGates;
+import io.github.hugo1307.fallgates.services.Service;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -14,7 +15,7 @@ import java.text.MessageFormat;
  * Service for handling messages in the FallGates plugin.
  */
 @Singleton
-public final class MessageService {
+public final class MessageService implements Service {
 
     private static final String MESSAGES_FILE_NAME = "messages.yml";
 

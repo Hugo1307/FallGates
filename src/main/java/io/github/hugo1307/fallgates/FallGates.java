@@ -8,33 +8,27 @@ import dev.hugog.minecraft.dev_command.commands.handler.CommandHandler;
 import dev.hugog.minecraft.dev_command.dependencies.DependencyHandler;
 import dev.hugog.minecraft.dev_command.integration.Integration;
 import io.github.hugo1307.fallgates.config.ConfigHandler;
-import io.github.hugo1307.fallgates.data.cache.KeyValueCache;
 import io.github.hugo1307.fallgates.injection.PluginBinderModule;
 import io.github.hugo1307.fallgates.messages.MessageService;
-import io.github.hugo1307.fallgates.services.GateService;
-import io.github.hugo1307.fallgates.services.SchematicsService;
+import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import io.github.hugo1307.fallgates.utils.PluginValidationConfiguration;
+import lombok.Getter;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class FallGates extends JavaPlugin {
 
+    @Getter
+    private Injector guiceInjector;
+
     @Inject
     private ConfigHandler configHandler;
-
-    @Inject
-    private GateService gateService;
-    @Inject
-    private SchematicsService schematicsService;
-    @Inject
-    private MessageService messageService;
-
-    @Inject
-    private KeyValueCache keyValueCache;
+    private ServiceAccessor serviceAccessor;
 
     @Override
     public void onEnable() {
         initDependencyInjection();
+        serviceAccessor = new ServiceAccessor(this);
         initDevCommands();
         registerCommandsDependencies();
         configHandler.init();
@@ -47,8 +41,8 @@ public final class FallGates extends JavaPlugin {
 
     private void initDependencyInjection() {
         PluginBinderModule guiceBinderModule = new PluginBinderModule(this);
-        Injector injector = guiceBinderModule.createInjector();
-        injector.injectMembers(this);
+        this.guiceInjector = guiceBinderModule.createInjector();
+        this.guiceInjector.injectMembers(this);
     }
 
     private void initDevCommands() {
@@ -67,7 +61,7 @@ public final class FallGates extends JavaPlugin {
         CommandHandler commandHandler = devCommand.getCommandHandler();
 
         commandHandler.initCommandsAutoConfiguration(pluginDevCommandsIntegration);
-        commandHandler.useAutoValidationConfiguration(new PluginValidationConfiguration(messageService));
+        commandHandler.useAutoValidationConfiguration(new PluginValidationConfiguration(serviceAccessor.accessService(MessageService.class)));
     }
 
     private void registerCommandsDependencies() {
@@ -75,16 +69,8 @@ public final class FallGates extends JavaPlugin {
         DependencyHandler dependencyHandler = devCommand.getDependencyHandler();
         Integration pluginDevCommandsIntegration = Integration.createFromPlugin(this);
 
-        // Bukkit Related Stuff
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, this);
-
-        // Services
-        dependencyHandler.registerDependency(pluginDevCommandsIntegration, messageService);
-        dependencyHandler.registerDependency(pluginDevCommandsIntegration, gateService);
-        dependencyHandler.registerDependency(pluginDevCommandsIntegration, schematicsService);
-
-        // Cache
-        dependencyHandler.registerDependency(pluginDevCommandsIntegration, keyValueCache);
+        dependencyHandler.registerDependency(pluginDevCommandsIntegration, serviceAccessor);
     }
 
 }

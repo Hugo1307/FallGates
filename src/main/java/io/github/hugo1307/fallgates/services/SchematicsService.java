@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Singleton
-public final class SchematicsService {
+public final class SchematicsService implements Service {
 
     private static final String SCHEMATICS_FOLDER = "schematics";
 
@@ -40,12 +40,33 @@ public final class SchematicsService {
     }
 
     /**
+     * Checks if a schematic with the given name is available in the "schematics" folder.
+     *
+     * @param schematicName the name of the schematic to check
+     * @return true if the schematic is available, false otherwise
+     */
+    public boolean isSchematicAvailable(String schematicName) {
+        if (schematicName == null || schematicName.isEmpty()) {
+            return false; // Invalid schematic name
+        }
+
+        File schematicsFolder = new File(plugin.getDataFolder(), SCHEMATICS_FOLDER);
+        if (!schematicsFolder.exists() || !schematicsFolder.isDirectory()) {
+            return false; // Schematics folder does not exist
+        }
+
+        File schematicFile = new File(schematicsFolder, schematicName + ".schem");
+        return schematicFile.exists() && schematicFile.isFile(); // Check if the file exists and is a file
+    }
+
+    /**
      * Loads a schematic file into a {@link FallGateSchematic} object.
      *
      * @param schematicName the name of the schematic to load
      * @return the loaded {@link FallGateSchematic}
+     * @throws SchematicReadException if the schematic file cannot be read or is in an unsupported format
      */
-    public FallGateSchematic loadSchematic(String schematicName) {
+    public FallGateSchematic loadSchematic(String schematicName) throws SchematicReadException {
         FallGateSchematic schematic = new FallGateSchematic(schematicName);
 
         File schematicFile = Path.of(plugin.getDataFolder().getPath(), SCHEMATICS_FOLDER, schematic.getFileName()).toFile();

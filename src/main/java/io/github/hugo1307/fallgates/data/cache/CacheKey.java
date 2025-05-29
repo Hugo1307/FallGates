@@ -1,6 +1,6 @@
 package io.github.hugo1307.fallgates.data.cache;
 
-import io.github.hugo1307.fallgates.commands.ConfirmationCommand;
+import io.github.hugo1307.fallgates.confirmations.PluginConfirmation;
 import io.github.hugo1307.fallgates.data.domain.FallGateSchematic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +22,13 @@ public class CacheKey {
         return cacheKey;
     }
 
-    public String getKey() {
-        return player.getUniqueId() + ":" + keyType.name();
-    }
-
     @Getter
     @RequiredArgsConstructor
     public enum KeyType {
         /**
          * Key for the confirmation of an operation in the cache.
          */
-        CONFIRM_OPERATION(ConfirmationCommand.ConfirmationType.class),
+        CONFIRM_OPERATION(PluginConfirmation.class),
         /**
          * Key for the position of a gate in the cache.
          */

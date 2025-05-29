@@ -11,8 +11,10 @@ public enum Message {
     INVALID_ARGUMENTS("general.invalidArguments"),
     INVALID_SENDER("general.invalidSender"),
 
-    GATE_BUILD_POSITION_SET("commands.build.positionSet"),
-    GATE_BUILD_SUCCESS("commands.build.success"),
+    FALL_CREATION_POSITION_SET("commands.create.positionSet"),
+    FALL_CREATION_SUCCESS("commands.create.success"),
+    FALL_CREATION_INVALID_SCHEMATIC("commands.create.invalidSchematic"),
+    FALL_CREATION_ERROR_LOADING_SCHEMATIC("commands.create.errorLoadingSchematic"),
 
     CONFIRM_NO_OPERATION_PENDING("commands.confirm.noOperationPending");
 
