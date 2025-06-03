@@ -1,0 +1,52 @@
+package io.github.hugo1307.fallgates.listeners;
+
+import com.google.inject.Inject;
+import io.github.hugo1307.fallgates.FallGates;
+import io.github.hugo1307.fallgates.data.domain.Fall;
+import io.github.hugo1307.fallgates.services.FallService;
+import org.bukkit.block.data.Powerable;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.Optional;
+
+public class FallInteractListener implements Listener {
+
+    private final FallGates plugin;
+    private final FallService fallService;
+
+    @Inject
+    public FallInteractListener(FallGates plugin, FallService fallService) {
+        this.plugin = plugin;
+        this.fallService = fallService;
+    }
+
+    @EventHandler
+    public void onPressurePlateInteract(PlayerInteractEvent event) {
+        // Ignore all interactions that are not physical (e.g., right-clicks with items)
+        if (event.getAction() != Action.PHYSICAL) {
+            return;
+        }
+
+        // Check if the clicked block is a pressure plate or a pressure sensor
+        if (event.getClickedBlock() == null || !(event.getClickedBlock().getBlockData() instanceof Powerable)) {
+            return;
+        }
+
+        Optional<Fall> closestFallOptional = fallService.getClosestFall(event.getClickedBlock().getLocation(), 5);
+        if (closestFallOptional.isEmpty()) {
+            return;
+        }
+
+        Fall closestFall = closestFallOptional.get();
+        if (!closestFall.isOpen()) {
+            fallService.openFall(closestFall);
+            // Schedule a task to close the fall after a delay
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
+                    () -> fallService.closeFall(closestFall), 20 * 5L);
+        }
+    }
+
+}

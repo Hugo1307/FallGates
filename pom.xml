@@ -102,6 +102,12 @@
             <artifactId>worldedit-core</artifactId>
             <version>7.2.20</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-runtime</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

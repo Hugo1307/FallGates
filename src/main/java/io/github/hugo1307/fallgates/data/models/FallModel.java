@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bukkit.Material;
 
 @Entity
 @Table(name = "falls")
@@ -26,15 +27,19 @@ public class FallModel implements DataModel<Long, Fall> {
     @JoinColumn(name = "position_id", nullable = false)
     private PositionModel position;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "material", nullable = false)
+    private Material material;
+
     @Column(name = "x_size", nullable = false)
-    private int xSize;
+    private Integer xSize;
 
     @Column(name = "z_size", nullable = false)
-    private int zSize;
+    private Integer zSize;
 
     @Override
     public Fall toDomainEntity() {
-        return new Fall(id, name, position.toDomainEntity(), xSize, zSize);
+        return new Fall(id, name, position.toDomainEntity(), material, xSize, zSize);
     }
 
 }

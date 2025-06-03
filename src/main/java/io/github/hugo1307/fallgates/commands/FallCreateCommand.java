@@ -17,6 +17,7 @@ import io.github.hugo1307.fallgates.services.ConfirmationService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,8 +30,9 @@ import java.util.stream.IntStream;
 @Arguments({
         @Argument(name = "name", description = "The name of the fall.", position = 0, parser = StringArgumentParser.class),
         @Argument(name = "schematicName", description = "The name of the schematic to use.", position = 1, parser = StringArgumentParser.class),
-        @Argument(name = "xSize", description = "The size of the fall on X axis.", position = 2, parser = IntegerArgumentParser.class),
-        @Argument(name = "zSize", description = "The size of the fall on Z axis.", position = 3, parser = IntegerArgumentParser.class)
+        @Argument(name = "material", description = "The material of the Fall.", position = 2, parser = StringArgumentParser.class),
+        @Argument(name = "xSize", description = "The size of the fall on X axis.", position = 3, parser = IntegerArgumentParser.class, optional = true),
+        @Argument(name = "zSize", description = "The size of the fall on Z axis.", position = 4, parser = IntegerArgumentParser.class, optional = true)
 })
 @Dependencies(dependencies = {FallGates.class, ServiceAccessor.class})
 @SuppressWarnings("unused")
@@ -41,6 +43,8 @@ public class FallCreateCommand extends BukkitDevCommand {
     private final ConfirmationService confirmationService;
     private final MessageService messageService;
     private final SchematicsService schematicsService;
+
+    private static final int DEFAULT_SIZE = 3;
 
     public FallCreateCommand(BukkitCommandData commandData, CommandSender commandSender, String[] args) {
         super(commandData, commandSender, args);
@@ -58,8 +62,13 @@ public class FallCreateCommand extends BukkitDevCommand {
 
         String fallName = ((StringArgumentParser) getArgumentParser(0)).parse().orElseThrow();
         String schematicName = ((StringArgumentParser) getArgumentParser(1)).parse().orElseThrow();
-        int xSize = ((IntegerArgumentParser) getArgumentParser(2)).parse().orElseThrow();
-        int zSize = ((IntegerArgumentParser) getArgumentParser(3)).parse().orElseThrow();
+        Material material = Material.matchMaterial(((StringArgumentParser) getArgumentParser(2)).parse().orElseThrow());
+        int xSize = getOptionalArgumentParser(3)
+                .map(parser -> ((IntegerArgumentParser) parser).parse().orElse(DEFAULT_SIZE))
+                .orElse(DEFAULT_SIZE);
+        int zSize = getOptionalArgumentParser(4)
+                .map(parser -> ((IntegerArgumentParser) parser).parse().orElse(DEFAULT_SIZE))
+                .orElse(DEFAULT_SIZE);
         Location schematicLocation = player.getLocation().clone().add(0, 1, 0);
 
         if (!schematicsService.isSchematicAvailable(schematicName)) {
@@ -76,7 +85,9 @@ public class FallCreateCommand extends BukkitDevCommand {
             return;
         }
 
-        Fall fallToCreate = new Fall(null, fallName, Position.fromBukkitLocation(schematicLocation), xSize, zSize, schematic);
+        Fall fallToCreate = new Fall(null, fallName, Position.fromBukkitLocation(schematicLocation), material, xSize, zSize);
+        fallToCreate.setSchematic(schematic);
+
         FallCreationConfirmation fallCreationConfirmation = new FallCreationConfirmation(plugin, serviceAccessor, fallToCreate);
 
         confirmationService.addConfirmation(player, fallCreationConfirmation);

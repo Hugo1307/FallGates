@@ -9,7 +9,9 @@ import dev.hugog.minecraft.dev_command.dependencies.DependencyHandler;
 import dev.hugog.minecraft.dev_command.integration.Integration;
 import io.github.hugo1307.fallgates.config.ConfigHandler;
 import io.github.hugo1307.fallgates.injection.PluginBinderModule;
+import io.github.hugo1307.fallgates.listeners.FallInteractListener;
 import io.github.hugo1307.fallgates.messages.MessageService;
+import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import io.github.hugo1307.fallgates.utils.PluginValidationConfiguration;
 import lombok.Getter;
@@ -24,14 +26,25 @@ public final class FallGates extends JavaPlugin {
     @Inject
     private ConfigHandler configHandler;
     private ServiceAccessor serviceAccessor;
+    
+    @Inject
+    private FallInteractListener fallInteractListener;
 
     @Override
     public void onEnable() {
         initDependencyInjection();
-        serviceAccessor = new ServiceAccessor(this);
+
+        // Initialize the ServiceAccessor after Guice injector is set up
+        this.serviceAccessor = new ServiceAccessor(this);
+
         initDevCommands();
         registerCommandsDependencies();
+
+        // Initialize the configuration handler
         configHandler.init();
+
+        registerListeners();
+        loadData();
     }
 
     @Override
@@ -71,6 +84,20 @@ public final class FallGates extends JavaPlugin {
 
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, this);
         dependencyHandler.registerDependency(pluginDevCommandsIntegration, serviceAccessor);
+    }
+
+    private void registerListeners() {
+        getServer().getPluginManager().registerEvents(fallInteractListener, this);
+    }
+
+    private void loadData() {
+        // Load all falls from the database to the cache
+        serviceAccessor.accessService(FallService.class).loadFalls().thenRun(() -> {
+            getLogger().info("All falls loaded from the database.");
+        }).exceptionally(ex -> {
+            getLogger().severe("Failed to load falls from the database: " + ex.getMessage());
+            return null;
+        });
     }
 
 }
