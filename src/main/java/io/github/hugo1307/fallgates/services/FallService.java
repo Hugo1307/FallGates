@@ -25,6 +25,26 @@ public final class FallService implements Service {
     }
 
     /**
+     * Get a Fall by its ID from the cache.
+     *
+     * @param id the ID of the Fall to retrieve
+     * @return an Optional containing the Fall if found, or empty if not found
+     */
+    public Optional<Fall> getFallById(Long id) {
+        return Optional.ofNullable(fallsCache.get(id));
+    }
+
+    /**
+     * Check if a Fall exists by its ID.
+     *
+     * @param id the ID of the Fall to check
+     * @return true if the Fall exists, false otherwise
+     */
+    public boolean exists(Long id) {
+        return fallsCache.contains(id);
+    }
+
+    /**
      * Get the closest Fall to a given location within a specified radius.
      *
      * @param location the location to search from
@@ -38,13 +58,35 @@ public final class FallService implements Service {
     }
 
     /**
+     * Connect two Falls together, ensuring that neither is already connected to another Fall.
+     *
+     * @param sourceFall the first Fall to connect
+     * @param targetFall the second Fall to connect
+     * @throws IllegalStateException if either Fall is already connected to another Fall
+     */
+    public void connectFalls(Fall sourceFall, Fall targetFall) {
+        if (sourceFall.getTargetFallId() != null || targetFall.getTargetFallId() != null) {
+            throw new IllegalStateException("One of the falls is already connected to another fall.");
+        }
+
+        sourceFall.setTargetFallId(targetFall.getId());
+        targetFall.setTargetFallId(sourceFall.getId());
+
+        updateFall(sourceFall);
+        updateFall(targetFall);
+    }
+
+    /**
      * Open the provided Fall by replacing blocks of the specified material within its radius with air.
      *
      * @param fall the Fall to open
      */
     public void openFall(Fall fall) {
-        replaceFallBlocks(fall, fall.getMaterial(), Material.AIR);
-        fall.setOpen(true);
+        if (!fall.isOpen() && fall.isConnected()) {
+            replaceFallBlocks(fall, fall.getMaterial(), Material.AIR);
+            fall.setOpen(true);
+            getFallById(fall.getTargetFallId()).ifPresent(this::openFall);
+        }
     }
 
     /**
@@ -53,8 +95,12 @@ public final class FallService implements Service {
      * @param fall the Fall to close
      */
     public void closeFall(Fall fall) {
-        replaceFallBlocks(fall, Material.AIR, fall.getMaterial());
-        fall.setOpen(false);
+        if (fall.isOpen()) {
+            replaceFallBlocks(fall, Material.AIR, fall.getMaterial());
+            fall.setOpen(false);
+
+            getFallById(fall.getTargetFallId()).ifPresent(this::closeFall);
+        }
     }
 
     private void replaceFallBlocks(Fall fall, Material materialToReplace, Material replacementMaterial) {
@@ -85,6 +131,20 @@ public final class FallService implements Service {
         return fallRepository.findAll().thenAccept(falls -> fallsCache.putAll(falls.stream()
                 .map(FallModel::toDomainEntity)
                 .collect(Collectors.toUnmodifiableSet())));
+    }
+
+    /**
+     * Update an existing Fall in the database and cache.
+     *
+     * @param fall the Fall to update
+     * @throws IllegalArgumentException if the Fall does not exist in the cache
+     */
+    public void updateFall(Fall fall) {
+        if (!fallsCache.contains(fall.getId())) {
+            throw new IllegalArgumentException("Fall with ID " + fall.getId() + " does not exist in the cache.");
+        }
+        fallRepository.update(fall.toDataModel())
+                .thenRun(() -> fallsCache.put(fall));
     }
 
     /**

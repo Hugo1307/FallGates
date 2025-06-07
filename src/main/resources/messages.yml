@@ -10,5 +10,10 @@ commands:
     invalidSchematic: "Invalid schematic provided §c{0}§7. Please ensure the file exists and is a valid schematic."
     errorLoadingSchematic: "An error occurred while loading the schematic §c{0}§7."
 
+  connect:
+    noFall: "No fall found with the id §c{0}§7."
+    alreadyConnected: "At least one of the falls is already connected to another fall."
+    success: "The fall §e{0} §7has been successfully connected to the fall §e{1}§7."
+
   confirm:
     noOperationPending: "You have no pending confirmation operations."

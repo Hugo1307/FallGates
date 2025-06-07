@@ -11,6 +11,7 @@ import io.github.hugo1307.fallgates.data.repositories.FallRepository;
 import lombok.NonNull;
 
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,11 @@ public class FallsCache {
      * @return the Fall object associated with the given ID
      */
     public Fall get(Long id) {
-        return cache.getUnchecked(id);
+        try {
+            return cache.get(id);
+        } catch (ExecutionException e) {
+            return null;
+        }
     }
 
     /**
@@ -68,6 +73,16 @@ public class FallsCache {
      */
     public void putAll(Set<Fall> falls) {
         cache.putAll(falls.stream().collect(Collectors.toMap(Fall::getId, Function.identity())));
+    }
+
+    /**
+     * Checks if a Fall with the given ID exists in the cache.
+     *
+     * @param id the ID of the Fall to check
+     * @return true if the Fall exists in the cache, false otherwise
+     */
+    public boolean contains(Long id) {
+        return cache.asMap().containsKey(id);
     }
 
 }

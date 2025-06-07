@@ -6,6 +6,7 @@ import dev.hugog.minecraft.dev_command.arguments.parsers.StringArgumentParser;
 import dev.hugog.minecraft.dev_command.commands.BukkitDevCommand;
 import dev.hugog.minecraft.dev_command.commands.data.BukkitCommandData;
 import io.github.hugo1307.fallgates.FallGates;
+import io.github.hugo1307.fallgates.commands.parsers.MaterialArgumentParser;
 import io.github.hugo1307.fallgates.confirmations.FallCreationConfirmation;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.data.domain.FallGateSchematic;
@@ -30,7 +31,7 @@ import java.util.stream.IntStream;
 @Arguments({
         @Argument(name = "name", description = "The name of the fall.", position = 0, parser = StringArgumentParser.class),
         @Argument(name = "schematicName", description = "The name of the schematic to use.", position = 1, parser = StringArgumentParser.class),
-        @Argument(name = "material", description = "The material of the Fall.", position = 2, parser = StringArgumentParser.class),
+        @Argument(name = "material", description = "The material of the Fall.", position = 2, parser = MaterialArgumentParser.class),
         @Argument(name = "xSize", description = "The size of the fall on X axis.", position = 3, parser = IntegerArgumentParser.class, optional = true),
         @Argument(name = "zSize", description = "The size of the fall on Z axis.", position = 4, parser = IntegerArgumentParser.class, optional = true)
 })
@@ -62,7 +63,7 @@ public class FallCreateCommand extends BukkitDevCommand {
 
         String fallName = ((StringArgumentParser) getArgumentParser(0)).parse().orElseThrow();
         String schematicName = ((StringArgumentParser) getArgumentParser(1)).parse().orElseThrow();
-        Material material = Material.matchMaterial(((StringArgumentParser) getArgumentParser(2)).parse().orElseThrow());
+        Material material = ((MaterialArgumentParser) getArgumentParser(2)).parse().orElseThrow();
         int xSize = getOptionalArgumentParser(3)
                 .map(parser -> ((IntegerArgumentParser) parser).parse().orElse(DEFAULT_SIZE))
                 .orElse(DEFAULT_SIZE);

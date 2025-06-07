@@ -20,6 +20,9 @@ public class FallModel implements DataModel<Long, Fall> {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "target_fall_id")
+    private Long targetFallId;
+
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
@@ -39,7 +42,7 @@ public class FallModel implements DataModel<Long, Fall> {
 
     @Override
     public Fall toDomainEntity() {
-        return new Fall(id, name, position.toDomainEntity(), material, xSize, zSize);
+        return new Fall(id, targetFallId, name, position.toDomainEntity(), material, xSize, zSize);
     }
 
 }

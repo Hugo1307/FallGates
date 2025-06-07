@@ -12,6 +12,7 @@ import org.bukkit.Material;
 public class Fall implements DomainEntity<FallModel> {
 
     private Long id;
+    private Long targetFallId;
     private String name;
     private Position position;
     private Material material;
@@ -25,17 +26,25 @@ public class Fall implements DomainEntity<FallModel> {
     private boolean isOpen;
 
     public Fall(Long id, String name, Position position, Material material, int xSize, int zSize) {
-        this.id = id;
-        this.name = name;
-        this.position = position;
-        this.material = material;
-        this.xSize = xSize;
-        this.zSize = zSize;
+        this(id, null, name, position, material, xSize, zSize, null, false);
+    }
+
+    public Fall(Long id, Long targetFallId, String name, Position position, Material material, int xSize, int zSize) {
+        this(id, targetFallId, name, position, material, xSize, zSize, null, false);
+    }
+
+    /**
+     * Check if the fall is connected to another fall.
+     *
+     * @return true if the fall is connected to another fall, false otherwise.
+     */
+    public boolean isConnected() {
+        return targetFallId != null && targetFallId > 0;
     }
 
     @Override
     public FallModel toDataModel() {
-        return new FallModel(id, name, position.toDataModel(), material, xSize, zSize);
+        return new FallModel(id, targetFallId, name, position.toDataModel(), material, xSize, zSize);
     }
 
 }

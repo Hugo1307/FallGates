@@ -16,6 +16,10 @@ public enum Message {
     FALL_CREATION_INVALID_SCHEMATIC("commands.create.invalidSchematic"),
     FALL_CREATION_ERROR_LOADING_SCHEMATIC("commands.create.errorLoadingSchematic"),
 
+    FALL_CONNECT_NO_FALL("commands.connect.noFall"),
+    FALL_CONNECT_ALREADY_CONNECTED("commands.connect.alreadyConnected"),
+    FALL_CONNECT_SUCCESS("commands.connect.success"),
+
     CONFIRM_NO_OPERATION_PENDING("commands.confirm.noOperationPending");
 
     private final String key;
