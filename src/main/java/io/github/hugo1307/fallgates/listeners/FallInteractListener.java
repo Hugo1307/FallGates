@@ -41,12 +41,22 @@ public class FallInteractListener implements Listener {
         }
 
         Fall closestFall = closestFallOptional.get();
-        if (!closestFall.isOpen()) {
-            fallService.openFall(closestFall);
-            // Schedule a task to close the fall after a delay
-            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
-                    () -> fallService.closeFall(closestFall), 20 * 5L);
+        if (closestFall.getTargetFallId() == null) {
+            plugin.getLogger().warning("Fall at " + closestFall.getPosition() + " does not have a target fall ID set.");
+            return;
         }
+
+        Optional<Fall> targetFallOptional = fallService.getFallById(closestFall.getTargetFallId());
+        if (targetFallOptional.isEmpty()) {
+            plugin.getLogger().warning("Target fall with ID " + closestFall.getTargetFallId() + " not found for fall at " + closestFall.getPosition());
+            return;
+        }
+
+        fallService.openFall(closestFall);
+        fallService.scheduleFallClose(closestFall);
+
+        fallService.openFall(targetFallOptional.get());
+        fallService.scheduleFallClose(targetFallOptional.get());
     }
 
 }

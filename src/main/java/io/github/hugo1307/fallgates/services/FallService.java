@@ -1,7 +1,9 @@
 package io.github.hugo1307.fallgates.services;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import io.github.hugo1307.fallgates.data.cache.FallsCache;
+import io.github.hugo1307.fallgates.data.cache.OpenFallsCache;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.data.models.FallModel;
 import io.github.hugo1307.fallgates.data.repositories.FallRepository;
@@ -9,19 +11,27 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@Singleton
 public final class FallService implements Service {
 
     private final FallRepository fallRepository;
     private final FallsCache fallsCache;
+    private final OpenFallsCache openFallsCache;
+
+    private final Map<Fall, Long> fallsToClose = new HashMap<>();
 
     @Inject
-    public FallService(FallRepository fallRepository, FallsCache fallsCache) {
+    public FallService(FallRepository fallRepository, FallsCache fallsCache, OpenFallsCache openFallsCache) {
         this.fallRepository = fallRepository;
         this.fallsCache = fallsCache;
+        this.openFallsCache = openFallsCache;
     }
 
     /**
@@ -77,16 +87,28 @@ public final class FallService implements Service {
     }
 
     /**
+     * Get all Falls that are currently open.
+     *
+     * @return a Set of Falls that are open
+     */
+    public Set<Fall> getOpenFalls() {
+        return openFallsCache.getOpenFalls();
+    }
+
+    /**
      * Open the provided Fall by replacing blocks of the specified material within its radius with air.
      *
      * @param fall the Fall to open
      */
     public void openFall(Fall fall) {
-        if (!fall.isOpen() && fall.isConnected()) {
-            replaceFallBlocks(fall, fall.getMaterial(), Material.AIR);
-            fall.setOpen(true);
-            getFallById(fall.getTargetFallId()).ifPresent(this::openFall);
+        // No need to open if already open or not connected
+        if (fall == null || fall.isOpen() || !fall.isConnected()) {
+            return;
         }
+
+        replaceFallBlocks(fall, fall.getMaterial(), Material.AIR);
+        fall.setOpen(true);
+        openFallsCache.add(fall);
     }
 
     /**
@@ -94,13 +116,41 @@ public final class FallService implements Service {
      *
      * @param fall the Fall to close
      */
-    public void closeFall(Fall fall) {
-        if (fall.isOpen()) {
-            replaceFallBlocks(fall, Material.AIR, fall.getMaterial());
-            fall.setOpen(false);
-
-            getFallById(fall.getTargetFallId()).ifPresent(this::closeFall);
+    public void closeFallNow(Fall fall) {
+        // No need to close if already closed
+        if (!fall.isOpen()) {
+            return;
         }
+
+        // Close current fall
+        replaceFallBlocks(fall, Material.AIR, fall.getMaterial());
+        fall.setOpen(false);
+        openFallsCache.remove(fall);
+    }
+
+    /**
+     * Schedule a Fall to be closed after a certain period.
+     *
+     * @param fall the Fall to schedule for closing
+     */
+    public void scheduleFallClose(Fall fall) {
+        fallsToClose.put(fall, System.currentTimeMillis());
+    }
+
+    /**
+     * Process scheduled Fall closures, closing any Falls that have been scheduled for more than 5 seconds.
+     */
+    public void processClosingFalls() {
+        long currentTime = System.currentTimeMillis();
+        fallsToClose.entrySet().removeIf(entry -> {
+            Fall fall = entry.getKey();
+            long scheduledTime = entry.getValue();
+            if (currentTime - scheduledTime >= 5000) { // 5 seconds
+                closeFallNow(fall);
+                return true;
+            }
+            return false;
+        });
     }
 
     private void replaceFallBlocks(Fall fall, Material materialToReplace, Material replacementMaterial) {

@@ -9,6 +9,7 @@ import dev.hugog.minecraft.dev_command.dependencies.DependencyHandler;
 import dev.hugog.minecraft.dev_command.integration.Integration;
 import io.github.hugo1307.fallgates.config.ConfigHandler;
 import io.github.hugo1307.fallgates.injection.PluginBinderModule;
+import io.github.hugo1307.fallgates.listeners.FallEnterListener;
 import io.github.hugo1307.fallgates.listeners.FallInteractListener;
 import io.github.hugo1307.fallgates.messages.MessageService;
 import io.github.hugo1307.fallgates.services.FallService;
@@ -26,9 +27,11 @@ public final class FallGates extends JavaPlugin {
     @Inject
     private ConfigHandler configHandler;
     private ServiceAccessor serviceAccessor;
-    
+
     @Inject
     private FallInteractListener fallInteractListener;
+    @Inject
+    private FallEnterListener fallEnterListener;
 
     @Override
     public void onEnable() {
@@ -44,6 +47,7 @@ public final class FallGates extends JavaPlugin {
         configHandler.init();
 
         registerListeners();
+        registerTasks();
         loadData();
     }
 
@@ -88,6 +92,13 @@ public final class FallGates extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(fallInteractListener, this);
+        getServer().getPluginManager().registerEvents(fallEnterListener, this);
+    }
+
+    private void registerTasks() {
+        // Task to process closing falls every 1 second
+        getServer().getScheduler().scheduleSyncRepeatingTask(this,
+                () -> serviceAccessor.accessService(FallService.class).processClosingFalls(), 0L, 20L);
     }
 
     private void loadData() {
