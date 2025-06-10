@@ -85,4 +85,13 @@ public class FallsCache {
         return cache.asMap().containsKey(id);
     }
 
+    /**
+     * Invalidates a Fall in the cache by its ID.
+     *
+     * @param id the ID of the Fall to invalidate
+     */
+    public void invalidate(Long id) {
+        cache.invalidate(id);
+    }
+
 }

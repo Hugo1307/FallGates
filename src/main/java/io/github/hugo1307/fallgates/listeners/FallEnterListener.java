@@ -2,6 +2,7 @@ package io.github.hugo1307.fallgates.listeners;
 
 import com.google.inject.Inject;
 import io.github.hugo1307.fallgates.FallGates;
+import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.services.FallService;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -33,14 +34,15 @@ public class FallEnterListener implements Listener {
         Player player = event.getPlayer();
         fallService.getOpenFalls().forEach(openFall -> {
             if (openFall.isInside(event.getTo()) && openFall.isConnected() && openFall.getPosition().getY() - event.getTo().getY() >= 5) {
-                fallService.getFallById(openFall.getTargetFallId()).ifPresent(targetFall -> {
-                    Location targetLocation = targetFall.getPosition().toBukkitLocation().clone();
-                    targetLocation.add(0, -5, 0);
-                    targetLocation.setYaw(event.getTo().getYaw());
-                    targetLocation.setPitch(event.getTo().getPitch());
-                    player.teleport(targetLocation);
-                    player.setVelocity(new Vector(0, 1.5, 0.25));
-                });
+                Fall targetFall = fallService.getFallById(openFall.getTargetFallId());
+                Location targetLocation = targetFall.getPosition().toBukkitLocation().clone();
+
+                targetLocation.add(0, -5, 0);
+                targetLocation.setYaw(event.getTo().getYaw());
+                targetLocation.setPitch(event.getTo().getPitch());
+
+                player.teleport(targetLocation);
+                player.setVelocity(new Vector(0, 1.5, 0.25));
             }
         });
     }

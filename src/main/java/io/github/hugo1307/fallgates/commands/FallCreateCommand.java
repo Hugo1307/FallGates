@@ -11,7 +11,7 @@ import io.github.hugo1307.fallgates.confirmations.FallCreationConfirmation;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.data.domain.FallGateSchematic;
 import io.github.hugo1307.fallgates.data.domain.Position;
-import io.github.hugo1307.fallgates.exceptions.SchematicReadException;
+import io.github.hugo1307.fallgates.exceptions.SchematicException;
 import io.github.hugo1307.fallgates.messages.Message;
 import io.github.hugo1307.fallgates.messages.MessageService;
 import io.github.hugo1307.fallgates.services.ConfirmationService;
@@ -79,8 +79,8 @@ public class FallCreateCommand extends BukkitDevCommand {
 
         FallGateSchematic schematic;
         try {
-            schematic = schematicsService.loadSchematic(schematicName);
-        } catch (SchematicReadException e) {
+            schematic = schematicsService.loadSchematic(schematicsService.getSchematicPath(schematicName));
+        } catch (SchematicException e) {
             messageService.sendPlayerMessage(player, Message.FALL_CREATION_ERROR_LOADING_SCHEMATIC, schematicName);
             plugin.getLogger().severe("Failed to load schematic: Caused by: " + e.getCause());
             return;

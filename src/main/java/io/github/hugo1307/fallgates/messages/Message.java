@@ -10,6 +10,7 @@ public enum Message {
     NO_PERMISSION("general.noPermission"),
     INVALID_ARGUMENTS("general.invalidArguments"),
     INVALID_SENDER("general.invalidSender"),
+    FALL_NOT_FOUND("general.fallNotFound"),
 
     FALL_CREATION_POSITION_SET("commands.create.positionSet"),
     FALL_CREATION_SUCCESS("commands.create.success"),

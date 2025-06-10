@@ -13,11 +13,14 @@ import io.github.hugo1307.fallgates.listeners.FallEnterListener;
 import io.github.hugo1307.fallgates.listeners.FallInteractListener;
 import io.github.hugo1307.fallgates.messages.MessageService;
 import io.github.hugo1307.fallgates.services.FallService;
+import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import io.github.hugo1307.fallgates.utils.PluginValidationConfiguration;
 import lombok.Getter;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.nio.file.Path;
 
 public final class FallGates extends JavaPlugin {
 
@@ -41,6 +44,7 @@ public final class FallGates extends JavaPlugin {
         this.serviceAccessor = new ServiceAccessor(this);
 
         initDevCommands();
+        initSchematicsData();
         registerCommandsDependencies();
 
         // Initialize the configuration handler
@@ -79,6 +83,25 @@ public final class FallGates extends JavaPlugin {
 
         commandHandler.initCommandsAutoConfiguration(pluginDevCommandsIntegration);
         commandHandler.useAutoValidationConfiguration(new PluginValidationConfiguration(serviceAccessor.accessService(MessageService.class)));
+    }
+
+    private void initSchematicsData() {
+        Path[] pathsToCreate = {
+            Path.of(getDataFolder().getPath(), SchematicsService.SCHEMATICS_PATH.toString()),
+            Path.of(getDataFolder().getPath(), SchematicsService.TERRAIN_BACKUP_PATH.toString())
+        };
+
+        for (Path path : pathsToCreate) {
+            if (path.toFile().exists()) {
+                continue;
+            }
+
+            if (path.toFile().mkdirs()) {
+                getLogger().info("Created Schematics directory: " + path);
+            } else {
+                getLogger().severe("Failed to create Schematics directory: " + path);
+            }
+        }
     }
 
     private void registerCommandsDependencies() {

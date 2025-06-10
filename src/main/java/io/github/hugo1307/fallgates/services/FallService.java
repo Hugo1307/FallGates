@@ -40,8 +40,8 @@ public final class FallService implements Service {
      * @param id the ID of the Fall to retrieve
      * @return an Optional containing the Fall if found, or empty if not found
      */
-    public Optional<Fall> getFallById(Long id) {
-        return Optional.ofNullable(fallsCache.get(id));
+    public Fall getFallById(Long id) {
+        return fallsCache.get(id);
     }
 
     /**
@@ -205,6 +205,16 @@ public final class FallService implements Service {
     public void saveFall(Fall fall) {
         fallRepository.save(fall.toDataModel())
                 .thenAccept(savedModel -> fallsCache.put(savedModel.toDomainEntity()));
+    }
+
+    /**
+     * Delete a Fall from the database and invalidate it in the cache.
+     *
+     * @param fall the Fall to delete
+     */
+    public void deleteFall(Fall fall) {
+        fallRepository.deleteById(fall.getId(), FallModel.class)
+                .thenRun(() -> fallsCache.invalidate(fall.getId()));
     }
 
 }

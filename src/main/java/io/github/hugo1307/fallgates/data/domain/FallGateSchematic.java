@@ -15,7 +15,7 @@ public class FallGateSchematic {
     private Clipboard schematicClipboard;
 
     public String getFileName() {
-        return this.name + ".schem";
+        return this.name;
     }
 
 }

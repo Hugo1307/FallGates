@@ -1,5 +1,6 @@
 package io.github.hugo1307.fallgates.confirmations;
 
+import com.sk89q.worldedit.math.BlockVector3;
 import io.github.hugo1307.fallgates.FallGates;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.messages.Message;
@@ -8,6 +9,8 @@ import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import org.bukkit.entity.Player;
+
+import java.nio.file.Path;
 
 public class FallCreationConfirmation extends PluginConfirmation {
 
@@ -29,9 +32,17 @@ public class FallCreationConfirmation extends PluginConfirmation {
 
     @Override
     public void onConfirm(Player player) {
+        backupFallRegion();
+
         schematicsService.pasteSchematic(fallToCreate.getSchematic(), fallToCreate.getPosition().toBukkitLocation());
         fallService.saveFall(fallToCreate);
         messageService.sendPlayerMessage(player, Message.FALL_CREATION_SUCCESS);
+    }
+
+    private void backupFallRegion() {
+        Path backupPath = schematicsService.getTerrainBackupPath(fallToCreate.getName());
+        BlockVector3 schematicDimensions = schematicsService.getSchematicDimensions(fallToCreate.getSchematic());
+        schematicsService.saveToSchematic(backupPath, fallToCreate.getPosition().toBukkitLocation(), schematicDimensions);
     }
 
 }
