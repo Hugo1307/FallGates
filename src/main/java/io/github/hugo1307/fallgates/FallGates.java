@@ -17,11 +17,13 @@ import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import io.github.hugo1307.fallgates.utils.PluginValidationConfiguration;
+import io.github.hugo1307.fallgates.utils.ResourceUtils;
 import lombok.Getter;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
+import java.util.logging.Level;
 
 public final class FallGates extends JavaPlugin {
 
@@ -90,8 +92,11 @@ public final class FallGates extends JavaPlugin {
 
     private void initSchematicsData() {
         Path[] pathsToCreate = {
-            Path.of(getDataFolder().getPath(), SchematicsService.SCHEMATICS_PATH.toString()),
-            Path.of(getDataFolder().getPath(), SchematicsService.TERRAIN_BACKUP_PATH.toString())
+                Path.of(getDataFolder().getPath(), SchematicsService.SCHEMATICS_PATH.toString()),
+                Path.of(getDataFolder().getPath(), SchematicsService.TERRAIN_BACKUP_PATH.toString())
+        };
+        Path[] defaultSchematics = {
+                Path.of("schematics/default_fall.schem")
         };
 
         for (Path path : pathsToCreate) {
@@ -99,10 +104,19 @@ public final class FallGates extends JavaPlugin {
                 continue;
             }
 
-            if (path.toFile().mkdirs()) {
-                getLogger().info("Created Schematics directory: " + path);
-            } else {
-                getLogger().severe("Failed to create Schematics directory: " + path);
+            if (!path.toFile().mkdirs()) {
+                getLogger().log(Level.SEVERE, "Failed to create Schematics directory {0}", path);
+                continue;
+            }
+
+            getLogger().log(Level.INFO, "Created Schematics directory {0}", path);
+            if (path.endsWith(SchematicsService.SCHEMATICS_PATH.toString())) {
+                // Copy default schematics to the schematics directory
+                for (Path schematic : defaultSchematics) {
+                    Path outputPath = path.resolve(schematic.getFileName());
+                    ResourceUtils.copyResource(this, schematic.toString(), outputPath.toFile());
+                    getLogger().log(Level.INFO, "Copied default schematic {0} to {1}", new Object[]{schematic, outputPath});
+                }
             }
         }
     }
