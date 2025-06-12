@@ -2,7 +2,6 @@ package io.github.hugo1307.fallgates.listeners;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.TeleportService;
 import org.bukkit.entity.Player;
@@ -31,9 +30,8 @@ public class FallEnterListener implements Listener {
 
         Player player = event.getPlayer();
         fallService.getOpenFalls().forEach(openFall -> {
-            if (openFall.isInside(event.getTo()) && openFall.isConnected() && openFall.getPosition().getY() - event.getTo().getY() >= 5) {
-                Fall targetFall = fallService.getFallById(openFall.getTargetFallId());
-                teleportService.teleportToFall(player, targetFall);
+            if (openFall.isInside(event.getTo()) && openFall.isConnected() && openFall.getPosition().getY() - event.getTo().getY() >= 10) {
+                fallService.getFallById(openFall.getTargetFallId()).ifPresent(targetFall -> teleportService.teleportToFall(player, targetFall));
             }
         });
     }

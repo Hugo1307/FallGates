@@ -35,8 +35,11 @@ public final class FallService implements Service {
      * @param id the ID of the Fall to retrieve
      * @return an Optional containing the Fall if found, or empty if not found
      */
-    public Fall getFallById(Long id) {
-        return fallsCache.get(id);
+    public Optional<Fall> getFallById(Long id) {
+        if (!exists(id)) {
+            return Optional.empty();
+        }
+        return Optional.of(fallsCache.get(id));
     }
 
     /**
@@ -83,6 +86,25 @@ public final class FallService implements Service {
 
         sourceFall.setTargetFallId(targetFall.getId());
         targetFall.setTargetFallId(sourceFall.getId());
+
+        updateFall(sourceFall);
+        updateFall(targetFall);
+    }
+
+    /**
+     * Disconnect two Falls that are currently connected.
+     *
+     * @param sourceFall the first Fall to disconnect
+     * @param targetFall the second Fall to disconnect
+     * @throws IllegalStateException if either Fall is not connected to another Fall
+     */
+    public void disconnectFalls(Fall sourceFall, Fall targetFall) {
+        if (sourceFall.getTargetFallId() == null || targetFall.getTargetFallId() == null) {
+            throw new IllegalStateException("One of the falls is not connected to another fall.");
+        }
+
+        sourceFall.setTargetFallId(null);
+        targetFall.setTargetFallId(null);
 
         updateFall(sourceFall);
         updateFall(targetFall);
@@ -215,6 +237,11 @@ public final class FallService implements Service {
      * @param fall the Fall to delete
      */
     public void deleteFall(Fall fall) {
+        // If the fall is connected to another fall, disconnect them first
+        if (fall.getTargetFallId() != null && exists(fall.getTargetFallId())) {
+            disconnectFalls(fall, getFallById(fall.getTargetFallId()).orElseThrow());
+        }
+
         fallRepository.deleteById(fall.getId(), FallModel.class)
                 .thenRun(() -> fallsCache.invalidate(fall.getId()));
     }

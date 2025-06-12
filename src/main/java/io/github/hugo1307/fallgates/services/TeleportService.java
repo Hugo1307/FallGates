@@ -40,13 +40,13 @@ public class TeleportService implements Service {
         Location currentLocation = player.getLocation();
         Location targetLocation = fall.getPosition().toBukkitLocation().clone();
 
-        targetLocation.add(0, -3, 0);
+        targetLocation.add(0, -10, 0);
         targetLocation.setYaw(currentLocation.getYaw());
         targetLocation.setPitch(currentLocation.getPitch());
 
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             player.teleport(targetLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            player.setVelocity(new Vector(0, 1.5, 0.25));
+            player.setVelocity(new Vector(0, 2, 0.25));
             teleportingPlayers.put(player.getUniqueId(), System.currentTimeMillis());
         });
     }

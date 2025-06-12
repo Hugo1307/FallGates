@@ -48,15 +48,19 @@ public class FallDeleteCommand extends BukkitDevCommand {
             return;
         }
 
-        Fall fallToDelete = fallService.getFallById(fallId);
-
+        Fall fallToDelete = fallService.getFallById(fallId).orElseThrow();
         fallService.deleteFall(fallToDelete);
 
-        Path terrainBackupPath = schematicsService.getTerrainBackupPath(fallToDelete.getName());
-        FallGateSchematic terrainSchematic = schematicsService.loadSchematic(terrainBackupPath);
+        // If the backup is available, restore the terrain schematic
+        if (schematicsService.isBackupAvailable(fallToDelete.getName())) {
+            Path terrainBackupPath = schematicsService.getTerrainBackupPath(fallToDelete.getName());
+            FallGateSchematic terrainSchematic = schematicsService.loadSchematic(terrainBackupPath);
 
-        schematicsService.pasteSchematic(terrainSchematic, fallToDelete.getPosition().toBukkitLocation());
-        schematicsService.deleteSchematic(terrainBackupPath);
+            schematicsService.pasteSchematic(terrainSchematic, fallToDelete.getPosition().toBukkitLocation());
+            schematicsService.deleteSchematic(terrainBackupPath);
+        }
+
+        messageService.sendMessage(player, Message.FALL_DELETE_SUCCESS, fallToDelete.getName());
     }
 
     @Override

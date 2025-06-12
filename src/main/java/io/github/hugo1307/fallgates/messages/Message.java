@@ -23,12 +23,14 @@ public enum Message {
     FALL_CONNECT_ALREADY_CONNECTED("commands.connect.alreadyConnected"),
     FALL_CONNECT_SUCCESS("commands.connect.success"),
 
-    CONFIRM_NO_OPERATION_PENDING("commands.confirm.noOperationPending"),
+    FALL_DELETE_SUCCESS("commands.delete.success"),
 
     FALL_LIST_NO_FALLS("commands.list.noFalls"),
     FALL_LIST_ID("commands.list.fallId"),
     FALL_LIST_LOCATION("commands.list.fallLocation"),
-    FALL_LIST_CONNECTED("commands.list.fallConnected");
+    FALL_LIST_CONNECTED("commands.list.fallConnected"),
+
+    CONFIRM_NO_OPERATION_PENDING("commands.confirm.noOperationPending");
 
     private final String key;
 

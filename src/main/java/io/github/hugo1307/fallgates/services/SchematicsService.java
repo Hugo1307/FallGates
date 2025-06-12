@@ -64,6 +64,26 @@ public final class SchematicsService implements Service {
     }
 
     /**
+     * Checks if a backup schematic with the given name is available in the "schematics" folder.
+     *
+     * @param schematicName the name of the schematic to check
+     * @return true if the schematic is available, false otherwise
+     */
+    public boolean isBackupAvailable(String schematicName) {
+        if (schematicName == null || schematicName.isEmpty()) {
+            return false; // Invalid schematic name
+        }
+
+        File schematicsFolder = new File(plugin.getDataFolder(), TERRAIN_BACKUP_PATH.toString());
+        if (!schematicsFolder.exists() || !schematicsFolder.isDirectory()) {
+            return false; // Schematics folder does not exist
+        }
+
+        File schematicFile = new File(schematicsFolder, schematicName + ".schem");
+        return schematicFile.exists() && schematicFile.isFile(); // Check if the file exists and is a file
+    }
+
+    /**
      * Loads a schematic file into a {@link FallGateSchematic} object.
      *
      * @param schematicPath the path to the schematic file, relative to the plugin's data folder

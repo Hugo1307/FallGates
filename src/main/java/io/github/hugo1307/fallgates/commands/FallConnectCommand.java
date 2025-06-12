@@ -48,8 +48,8 @@ public class FallConnectCommand extends BukkitDevCommand {
             return;
         }
 
-        Fall sourceFall = fallService.getFallById(sourceFallId);
-        Fall targetFall = fallService.getFallById(targetFallId);
+        Fall sourceFall = fallService.getFallById(sourceFallId).orElseThrow();
+        Fall targetFall = fallService.getFallById(targetFallId).orElseThrow();
 
         if (sourceFall.getTargetFallId() != null || targetFall.getTargetFallId() != null) {
             messageService.sendMessage(getCommandSender(), Message.FALL_CONNECT_ALREADY_CONNECTED);

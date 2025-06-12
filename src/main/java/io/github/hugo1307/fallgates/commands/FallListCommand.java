@@ -48,7 +48,7 @@ public class FallListCommand extends BukkitDevCommand {
                         String.valueOf(Math.round(fall.getPosition().getX())), String.valueOf(Math.round(fall.getPosition().getY())),
                         String.valueOf(Math.round(fall.getPosition().getZ())), fall.getPosition().getWorld()));
                 getCommandSender().sendMessage(messageService.getMessageWithoutPrefix(Message.FALL_LIST_CONNECTED,
-                        fall.getTargetFallId() != null ? fallService.getFallById(fall.getTargetFallId()).getName() : ChatColor.RED + "None"));
+                        fall.getTargetFallId() != null ? fallService.getFallById(fall.getTargetFallId()).map(Fall::getName).orElse("N/A") : ChatColor.RED + "None"));
                 getCommandSender().sendMessage("");
             }
         } else {

@@ -61,9 +61,11 @@ public class FallInteractListener implements Listener {
         fallService.openFall(closestFall);
         fallService.scheduleFallClose(closestFall);
 
-        Fall targetFall = fallService.getFallById(closestFall.getTargetFallId());
-        fallService.openFall(targetFall);
-        fallService.scheduleFallClose(targetFall);
+        // If the target fall exists, open it and schedule its close
+        fallService.getFallById(closestFall.getTargetFallId()).ifPresent(targetFall -> {
+            fallService.openFall(targetFall);
+            fallService.scheduleFallClose(targetFall);
+        });
     }
 
 }
