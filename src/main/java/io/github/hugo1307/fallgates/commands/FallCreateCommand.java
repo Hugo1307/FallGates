@@ -22,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -30,8 +31,8 @@ import java.util.stream.IntStream;
 @Command(alias = "create", description = "Create a new fall.", permission = "fallgates.command.create", isPlayerOnly = true)
 @Arguments({
         @Argument(name = "name", description = "The name of the fall.", position = 0, parser = StringArgumentParser.class),
-        @Argument(name = "schematicName", description = "The name of the schematic to use.", position = 1, parser = StringArgumentParser.class),
-        @Argument(name = "material", description = "The material of the Fall.", position = 2, parser = MaterialArgumentParser.class),
+        @Argument(name = "schematicName", description = "The name of the schematic to use.", position = 1, parser = StringArgumentParser.class, optional = true),
+        @Argument(name = "material", description = "The material of the Fall.", position = 2, parser = MaterialArgumentParser.class, optional = true),
         @Argument(name = "xSize", description = "The size of the fall on X axis.", position = 3, parser = IntegerArgumentParser.class, optional = true),
         @Argument(name = "zSize", description = "The size of the fall on Z axis.", position = 4, parser = IntegerArgumentParser.class, optional = true)
 })
@@ -62,8 +63,12 @@ public class FallCreateCommand extends BukkitDevCommand {
         Player player = (Player) getCommandSender();
 
         String fallName = ((StringArgumentParser) getArgumentParser(0)).parse().orElseThrow();
-        String schematicName = ((StringArgumentParser) getArgumentParser(1)).parse().orElseThrow();
-        Material material = ((MaterialArgumentParser) getArgumentParser(2)).parse().orElseThrow();
+        String schematicName = getOptionalArgumentParser(1)
+                .map(parser -> ((StringArgumentParser) parser).parse().orElse("default_fall"))
+                .orElse("default_fall");
+        Material material = getOptionalArgumentParser(2)
+                .map(parser -> ((MaterialArgumentParser) parser).parse().orElse(Material.SPRUCE_PLANKS))
+                .orElse(Material.SPRUCE_PLANKS);
         int xSize = getOptionalArgumentParser(3)
                 .map(parser -> ((IntegerArgumentParser) parser).parse().orElse(DEFAULT_SIZE))
                 .orElse(DEFAULT_SIZE);
@@ -99,7 +104,15 @@ public class FallCreateCommand extends BukkitDevCommand {
     public List<String> onTabComplete(String[] args) {
         if (args.length == 2) {
             return schematicsService.getAvailableSchematicsNames();
-        } else if (args.length == 3 || args.length == 4) {
+        } else if (args.length == 3) {
+            String materialInput = args[2].toUpperCase();
+            return Arrays.stream(Material.values())
+                    .filter(Material::isBlock)
+                    .filter(Material::isSolid)
+                    .map(Material::name)
+                    .filter(name -> name.startsWith(materialInput))
+                    .collect(Collectors.toUnmodifiableList());
+        } else if (args.length == 4 || args.length == 5) {
             return IntStream.range(1, 6)
                     .mapToObj(String::valueOf)
                     .collect(Collectors.toUnmodifiableList());

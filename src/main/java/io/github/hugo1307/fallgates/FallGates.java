@@ -11,6 +11,7 @@ import io.github.hugo1307.fallgates.config.ConfigHandler;
 import io.github.hugo1307.fallgates.injection.PluginBinderModule;
 import io.github.hugo1307.fallgates.listeners.FallEnterListener;
 import io.github.hugo1307.fallgates.listeners.FallInteractListener;
+import io.github.hugo1307.fallgates.listeners.FallLandingListener;
 import io.github.hugo1307.fallgates.messages.MessageService;
 import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
@@ -35,6 +36,8 @@ public final class FallGates extends JavaPlugin {
     private FallInteractListener fallInteractListener;
     @Inject
     private FallEnterListener fallEnterListener;
+    @Inject
+    private FallLandingListener fallLandingListener;
 
     @Override
     public void onEnable() {
@@ -116,6 +119,7 @@ public final class FallGates extends JavaPlugin {
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(fallInteractListener, this);
         getServer().getPluginManager().registerEvents(fallEnterListener, this);
+        getServer().getPluginManager().registerEvents(fallLandingListener, this);
     }
 
     private void registerTasks() {
