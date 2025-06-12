@@ -3,7 +3,6 @@ package io.github.hugo1307.fallgates.services;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.hugo1307.fallgates.data.cache.FallsCache;
-import io.github.hugo1307.fallgates.data.cache.OpenFallsCache;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.data.models.FallModel;
 import io.github.hugo1307.fallgates.data.repositories.FallRepository;
@@ -11,10 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -23,15 +19,14 @@ public final class FallService implements Service {
 
     private final FallRepository fallRepository;
     private final FallsCache fallsCache;
-    private final OpenFallsCache openFallsCache;
 
     private final Map<Fall, Long> fallsToClose = new HashMap<>();
+    private final Set<Fall> openFalls = new HashSet<>();
 
     @Inject
-    public FallService(FallRepository fallRepository, FallsCache fallsCache, OpenFallsCache openFallsCache) {
+    public FallService(FallRepository fallRepository, FallsCache fallsCache) {
         this.fallRepository = fallRepository;
         this.fallsCache = fallsCache;
-        this.openFallsCache = openFallsCache;
     }
 
     /**
@@ -58,13 +53,11 @@ public final class FallService implements Service {
      * Get the closest Fall to a given location within a specified radius.
      *
      * @param location the location to search from
-     * @param radius   the radius within which to search for Falls
      * @return an Optional containing the closest Fall if found, or empty if no Falls are within the radius
      */
-    public Optional<Fall> getClosestFall(Location location, int radius) {
+    public Optional<Fall> getClosestFall(Location location) {
         return fallsCache.getAll().stream()
-                .filter(fall -> fall.getPosition().toBukkitLocation().distance(location) <= radius)
-                .findFirst();
+                .min(Comparator.comparingDouble(fall -> fall.getPosition().toBukkitLocation().distance(location)));
     }
 
     /**
@@ -92,7 +85,7 @@ public final class FallService implements Service {
      * @return a Set of Falls that are open
      */
     public Set<Fall> getOpenFalls() {
-        return openFallsCache.getOpenFalls();
+        return Collections.unmodifiableSet(this.openFalls);
     }
 
     /**
@@ -108,7 +101,7 @@ public final class FallService implements Service {
 
         replaceFallBlocks(fall, fall.getMaterial(), Material.AIR);
         fall.setOpen(true);
-        openFallsCache.add(fall);
+        this.openFalls.add(fall);
     }
 
     /**
@@ -125,7 +118,7 @@ public final class FallService implements Service {
         // Close current fall
         replaceFallBlocks(fall, Material.AIR, fall.getMaterial());
         fall.setOpen(false);
-        openFallsCache.remove(fall);
+        this.openFalls.remove(fall);
     }
 
     /**

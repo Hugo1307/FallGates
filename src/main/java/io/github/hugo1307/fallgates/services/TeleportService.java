@@ -37,11 +37,6 @@ public class TeleportService implements Service {
      * @param fall   the fall to teleport the player to
      */
     public void teleportToFall(Player player, Fall fall) {
-        // If the player is already teleporting, do not allow another teleport
-        if (isTeleporting(player)) {
-            return;
-        }
-
         Location currentLocation = player.getLocation();
         Location targetLocation = fall.getPosition().toBukkitLocation().clone();
 

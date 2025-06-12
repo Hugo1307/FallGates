@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import io.github.hugo1307.fallgates.FallGates;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.services.FallService;
+import org.bukkit.Location;
 import org.bukkit.block.data.Powerable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,12 +36,18 @@ public class FallInteractListener implements Listener {
             return;
         }
 
-        Optional<Fall> closestFallOptional = fallService.getClosestFall(event.getClickedBlock().getLocation(), 5);
+        Location pressurePlateLocation = event.getClickedBlock().getLocation();
+        Optional<Fall> closestFallOptional = fallService.getClosestFall(pressurePlateLocation);
         if (closestFallOptional.isEmpty()) {
             return;
         }
 
         Fall closestFall = closestFallOptional.get();
+        // If the pressure plate is too far from the closest fall AND the pressure plate is not inside the closest fall, ignore
+        if (!closestFall.isInside(pressurePlateLocation) && closestFall.getPosition().toBukkitLocation().distance(pressurePlateLocation) > 5) {
+            return;
+        }
+
         if (closestFall.getTargetFallId() == null) {
             plugin.getLogger().warning("Fall at " + closestFall.getPosition() + " does not have a target fall ID set.");
             return;
