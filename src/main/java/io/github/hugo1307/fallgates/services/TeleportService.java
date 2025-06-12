@@ -46,7 +46,7 @@ public class TeleportService implements Service {
 
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             player.teleport(targetLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            player.setVelocity(new Vector(0, 2, 0.25));
+            player.setVelocity(new Vector(0, 2.25, 0.2));
             teleportingPlayers.put(player.getUniqueId(), System.currentTimeMillis());
         });
     }
