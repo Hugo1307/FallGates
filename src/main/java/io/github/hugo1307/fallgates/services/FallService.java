@@ -98,7 +98,7 @@ public final class FallService implements Service {
      * @param targetFall the second Fall to disconnect
      * @throws IllegalStateException if either Fall is not connected to another Fall
      */
-    public void disconnectFalls(Fall sourceFall, Fall targetFall) {
+    public CompletableFuture<Void> disconnectFalls(Fall sourceFall, Fall targetFall) {
         if (sourceFall.getTargetFallId() == null || targetFall.getTargetFallId() == null) {
             throw new IllegalStateException("One of the falls is not connected to another fall.");
         }
@@ -106,8 +106,7 @@ public final class FallService implements Service {
         sourceFall.setTargetFallId(null);
         targetFall.setTargetFallId(null);
 
-        updateFall(sourceFall);
-        updateFall(targetFall);
+        return CompletableFuture.allOf(updateFall(sourceFall), updateFall(targetFall));
     }
 
     /**
@@ -213,11 +212,11 @@ public final class FallService implements Service {
      * @param fall the Fall to update
      * @throws IllegalArgumentException if the Fall does not exist in the cache
      */
-    public void updateFall(Fall fall) {
+    public CompletableFuture<Void> updateFall(Fall fall) {
         if (!fallsCache.contains(fall.getId())) {
             throw new IllegalArgumentException("Fall with ID " + fall.getId() + " does not exist in the cache.");
         }
-        fallRepository.update(fall.toDataModel())
+        return fallRepository.update(fall.toDataModel())
                 .thenRun(() -> fallsCache.put(fall));
     }
 
@@ -239,11 +238,12 @@ public final class FallService implements Service {
     public void deleteFall(Fall fall) {
         // If the fall is connected to another fall, disconnect them first
         if (fall.getTargetFallId() != null && exists(fall.getTargetFallId())) {
-            disconnectFalls(fall, getFallById(fall.getTargetFallId()).orElseThrow());
+            disconnectFalls(fall, getFallById(fall.getTargetFallId()).orElseThrow()).thenRun(() ->
+                fallRepository.deleteById(fall.getId(), FallModel.class).thenRun(() -> fallsCache.invalidate(fall.getId()))
+            );
+        } else {
+            fallRepository.deleteById(fall.getId(), FallModel.class).thenRun(() -> fallsCache.invalidate(fall.getId()));
         }
-
-        fallRepository.deleteById(fall.getId(), FallModel.class)
-                .thenRun(() -> fallsCache.invalidate(fall.getId()));
     }
 
 }
