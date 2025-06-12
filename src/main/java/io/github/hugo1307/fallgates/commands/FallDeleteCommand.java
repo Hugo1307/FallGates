@@ -44,7 +44,7 @@ public class FallDeleteCommand extends BukkitDevCommand {
         Player player = (Player) getCommandSender();
 
         if (!fallService.exists(fallId)) {
-            messageService.sendPlayerMessage(player, Message.FALL_NOT_FOUND, String.valueOf(fallId));
+            messageService.sendMessage(player, Message.FALL_NOT_FOUND, String.valueOf(fallId));
             return;
         }
 

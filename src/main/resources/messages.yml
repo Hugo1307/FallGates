@@ -1,4 +1,6 @@
 general:
+  header: "§7-=-=-=-=-=-=-=-=-=-=- [{0}§7] -=-=-=-=-=-=-=-=-=-=-"
+  footer: "§7-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-"
   noPermission: "You do not have permission to perform this action."
   invalidArguments: "Invalid arguments provided - §e{0} §7at position §e{1}§7."
   invalidSender: "You must be a player to perform this action."
@@ -18,3 +20,9 @@ commands:
 
   confirm:
     noOperationPending: "You have no pending confirmation operations."
+
+  list:
+    noFalls: "No falls found."
+    fallId: "Id: §a{0}"
+    fallLocation: "Location: §e{0}§7, §e{1}§7, §e{2}§7 (§e{3}§7)"
+    fallConnected: "Connected to: §e{0}§7"

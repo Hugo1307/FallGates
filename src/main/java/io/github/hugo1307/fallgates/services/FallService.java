@@ -40,6 +40,15 @@ public final class FallService implements Service {
     }
 
     /**
+     * Get all Falls from the cache.
+     *
+     * @return a Set containing all Falls
+     */
+    public Set<Fall> getAllFalls() {
+        return Collections.unmodifiableSet(fallsCache.getAll());
+    }
+
+    /**
      * Check if a Fall exists by its ID.
      *
      * @param id the ID of the Fall to check

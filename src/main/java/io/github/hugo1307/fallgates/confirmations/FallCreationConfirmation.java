@@ -36,7 +36,7 @@ public class FallCreationConfirmation extends PluginConfirmation {
 
         schematicsService.pasteSchematic(fallToCreate.getSchematic(), fallToCreate.getPosition().toBukkitLocation());
         fallService.saveFall(fallToCreate);
-        messageService.sendPlayerMessage(player, Message.FALL_CREATION_SUCCESS);
+        messageService.sendMessage(player, Message.FALL_CREATION_SUCCESS);
     }
 
     private void backupFallRegion() {

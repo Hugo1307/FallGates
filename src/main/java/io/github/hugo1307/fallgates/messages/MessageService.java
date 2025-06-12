@@ -5,8 +5,8 @@ import com.google.inject.Singleton;
 import io.github.hugo1307.fallgates.FallGates;
 import io.github.hugo1307.fallgates.services.Service;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -33,11 +33,15 @@ public final class MessageService implements Service {
     }
 
     public String getMessage(Message message, String... arguments) {
-        return MessageFormat.format(getPrefix() + this.messagesConfig.getString(message.getKey(), "N/A"), arguments);
+        return getPrefix() + getMessageWithoutPrefix(message, arguments);
     }
 
-    public void sendPlayerMessage(Player player, Message message, String... arguments) {
-        player.sendMessage(getMessage(message, arguments));
+    public String getMessageWithoutPrefix(Message message, String... arguments) {
+        return MessageFormat.format(this.messagesConfig.getString(message.getKey(), "N/A"), arguments);
+    }
+
+    public void sendMessage(CommandSender sender, Message message, String... arguments) {
+        sender.sendMessage(getMessage(message, arguments));
     }
 
     public YamlConfiguration getMessagesConfig() {

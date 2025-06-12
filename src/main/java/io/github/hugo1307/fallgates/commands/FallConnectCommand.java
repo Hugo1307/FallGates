@@ -11,7 +11,6 @@ import io.github.hugo1307.fallgates.messages.MessageService;
 import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -36,18 +35,16 @@ public class FallConnectCommand extends BukkitDevCommand {
 
     @Override
     public void execute() {
-        Player player = (Player) getCommandSender();
-
         long sourceFallId = (int) getArgumentParser(0).parse().orElseThrow();
         long targetFallId = (int) getArgumentParser(1).parse().orElseThrow();
 
         if (!fallService.exists(sourceFallId)) {
-            messageService.sendPlayerMessage(player, Message.FALL_CONNECT_NO_FALL, String.valueOf(sourceFallId));
+            messageService.sendMessage(getCommandSender(), Message.FALL_CONNECT_NO_FALL, String.valueOf(sourceFallId));
             return;
         }
 
         if (!fallService.exists(targetFallId)) {
-            messageService.sendPlayerMessage(player, Message.FALL_CONNECT_NO_FALL, String.valueOf(targetFallId));
+            messageService.sendMessage(getCommandSender(), Message.FALL_CONNECT_NO_FALL, String.valueOf(targetFallId));
             return;
         }
 
@@ -55,12 +52,12 @@ public class FallConnectCommand extends BukkitDevCommand {
         Fall targetFall = fallService.getFallById(targetFallId);
 
         if (sourceFall.getTargetFallId() != null || targetFall.getTargetFallId() != null) {
-            messageService.sendPlayerMessage(player, Message.FALL_CONNECT_ALREADY_CONNECTED);
+            messageService.sendMessage(getCommandSender(), Message.FALL_CONNECT_ALREADY_CONNECTED);
             return;
         }
 
         fallService.connectFalls(sourceFall, targetFall);
-        messageService.sendPlayerMessage(player, Message.FALL_CONNECT_SUCCESS, sourceFall.getName(), targetFall.getName());
+        messageService.sendMessage(getCommandSender(), Message.FALL_CONNECT_SUCCESS, sourceFall.getName(), targetFall.getName());
     }
 
     @Override

@@ -78,7 +78,7 @@ public class FallCreateCommand extends BukkitDevCommand {
         Location schematicLocation = player.getLocation().clone().add(0, 1, 0);
 
         if (!schematicsService.isSchematicAvailable(schematicName)) {
-            messageService.sendPlayerMessage(player, Message.FALL_CREATION_INVALID_SCHEMATIC, schematicName);
+            messageService.sendMessage(player, Message.FALL_CREATION_INVALID_SCHEMATIC, schematicName);
             return;
         }
 
@@ -86,7 +86,7 @@ public class FallCreateCommand extends BukkitDevCommand {
         try {
             schematic = schematicsService.loadSchematic(schematicsService.getSchematicPath(schematicName));
         } catch (SchematicException e) {
-            messageService.sendPlayerMessage(player, Message.FALL_CREATION_ERROR_LOADING_SCHEMATIC, schematicName);
+            messageService.sendMessage(player, Message.FALL_CREATION_ERROR_LOADING_SCHEMATIC, schematicName);
             plugin.getLogger().severe("Failed to load schematic: Caused by: " + e.getCause());
             return;
         }
@@ -97,7 +97,7 @@ public class FallCreateCommand extends BukkitDevCommand {
         FallCreationConfirmation fallCreationConfirmation = new FallCreationConfirmation(plugin, serviceAccessor, fallToCreate);
 
         confirmationService.addConfirmation(player, fallCreationConfirmation);
-        messageService.sendPlayerMessage(player, Message.FALL_CREATION_POSITION_SET, "/fg confirm");
+        messageService.sendMessage(player, Message.FALL_CREATION_POSITION_SET, "/fg confirm");
     }
 
     @Override

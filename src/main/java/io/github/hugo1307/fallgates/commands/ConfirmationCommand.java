@@ -36,7 +36,7 @@ public class ConfirmationCommand extends BukkitDevCommand {
         Player player = (Player) getCommandSender();
 
         if (!confirmationService.hasConfirmation(player)) {
-            messageService.sendPlayerMessage(player, Message.CONFIRM_NO_OPERATION_PENDING);
+            messageService.sendMessage(player, Message.CONFIRM_NO_OPERATION_PENDING);
             return;
         }
         
