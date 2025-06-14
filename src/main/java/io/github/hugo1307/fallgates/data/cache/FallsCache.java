@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class FallsCache {
 
-    private final LoadingCache<Long, Fall> cache;
+    private final LoadingCache<String, Fall> cache;
 
     @Inject
     public FallsCache(FallRepository fallRepository) {
@@ -26,7 +26,7 @@ public class FallsCache {
                 .build(new CacheLoader<>() {
                     @Override
                     @NonNull
-                    public Fall load(@NonNull Long id) {
+                    public Fall load(@NonNull String id) {
                         return fallRepository.findById(id, FallModel.class).join()
                                 .map(FallModel::toDomainEntity)
                                 .orElseThrow(() -> new IllegalArgumentException("Fall not found"));
@@ -40,7 +40,7 @@ public class FallsCache {
      * @param id the ID of the Fall to retrieve
      * @return the Fall object associated with the given ID
      */
-    public Fall get(Long id) {
+    public Fall get(String id) {
         try {
             return cache.get(id);
         } catch (ExecutionException e) {
@@ -81,7 +81,7 @@ public class FallsCache {
      * @param id the ID of the Fall to check
      * @return true if the Fall exists in the cache, false otherwise
      */
-    public boolean contains(Long id) {
+    public boolean contains(String id) {
         return cache.asMap().containsKey(id);
     }
 
@@ -90,7 +90,7 @@ public class FallsCache {
      *
      * @param id the ID of the Fall to invalidate
      */
-    public void invalidate(Long id) {
+    public void invalidate(String id) {
         cache.invalidate(id);
     }
 

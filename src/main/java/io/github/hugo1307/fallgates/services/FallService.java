@@ -35,7 +35,7 @@ public final class FallService implements Service {
      * @param id the ID of the Fall to retrieve
      * @return an Optional containing the Fall if found, or empty if not found
      */
-    public Optional<Fall> getFallById(Long id) {
+    public Optional<Fall> getFallById(String id) {
         if (!exists(id)) {
             return Optional.empty();
         }
@@ -57,19 +57,8 @@ public final class FallService implements Service {
      * @param id the ID of the Fall to check
      * @return true if the Fall exists, false otherwise
      */
-    public boolean exists(Long id) {
+    public boolean exists(String id) {
         return fallsCache.contains(id);
-    }
-
-    /**
-     * Check if a Fall exists by its name.
-     *
-     * @param name the name of the Fall to check
-     * @return true if the Fall exists, false otherwise
-     */
-    public boolean existsByName(String name) {
-        return fallsCache.getAll().stream()
-                .anyMatch(fall -> fall.getName().equalsIgnoreCase(name));
     }
 
     /**
@@ -113,7 +102,7 @@ public final class FallService implements Service {
             return CompletableFuture.failedFuture(new IllegalStateException("Fall is not connected to another fall."));
         }
 
-        long targetFallId = sourceFall.getTargetFallId();
+        String targetFallId = sourceFall.getTargetFallId();
         sourceFall.setTargetFallId(null);
 
         return updateFall(sourceFall)

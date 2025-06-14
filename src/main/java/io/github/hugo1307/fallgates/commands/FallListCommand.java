@@ -35,7 +35,7 @@ public class FallListCommand extends BukkitDevCommand {
     @Override
     public void execute() {
         List<Fall> allFalls = fallService.getAllFalls().stream()
-                .sorted(Comparator.comparingLong(Fall::getId))
+                .sorted(Comparator.comparing(Fall::getId))
                 .collect(Collectors.toList());
 
         getCommandSender().sendMessage(messageService.getMessageWithoutPrefix(Message.HEADER, ChatColor.GREEN + "FallGates"));

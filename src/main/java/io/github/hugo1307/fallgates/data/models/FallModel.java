@@ -13,15 +13,14 @@ import org.bukkit.Material;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class FallModel implements DataModel<Long, Fall> {
+public class FallModel implements DataModel<String, Fall> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "target_fall_id")
-    private Long targetFallId;
+    private String targetFallId;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;

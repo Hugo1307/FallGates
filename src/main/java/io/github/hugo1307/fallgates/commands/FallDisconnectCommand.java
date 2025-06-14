@@ -1,7 +1,7 @@
 package io.github.hugo1307.fallgates.commands;
 
 import dev.hugog.minecraft.dev_command.annotations.*;
-import dev.hugog.minecraft.dev_command.arguments.parsers.IntegerArgumentParser;
+import dev.hugog.minecraft.dev_command.arguments.parsers.StringArgumentParser;
 import dev.hugog.minecraft.dev_command.commands.BukkitDevCommand;
 import dev.hugog.minecraft.dev_command.commands.data.BukkitCommandData;
 import io.github.hugo1307.fallgates.FallGates;
@@ -17,7 +17,7 @@ import java.util.List;
 @AutoValidation
 @Command(alias = "disconnect", description = "Disconnect a fall from another one.", permission = "fallgates.command.disconnect")
 @Arguments({
-        @Argument(name = "fall", description = "The id of the fall to disconnect.", position = 0, parser = IntegerArgumentParser.class),
+        @Argument(name = "fall", description = "The id of the fall to disconnect.", position = 0, parser = StringArgumentParser.class),
 })
 @Dependencies(dependencies = {FallGates.class, ServiceAccessor.class})
 public class FallDisconnectCommand extends BukkitDevCommand {
@@ -34,10 +34,10 @@ public class FallDisconnectCommand extends BukkitDevCommand {
 
     @Override
     public void execute() {
-        long fallId = (int) getArgumentParser(0).parse().orElseThrow();
+        String fallId = (String) getArgumentParser(0).parse().orElseThrow();
 
         if (!fallService.exists(fallId)) {
-            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, String.valueOf(fallId));
+            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, fallId);
             return;
         }
 

@@ -1,7 +1,7 @@
 package io.github.hugo1307.fallgates.commands;
 
 import dev.hugog.minecraft.dev_command.annotations.*;
-import dev.hugog.minecraft.dev_command.arguments.parsers.IntegerArgumentParser;
+import dev.hugog.minecraft.dev_command.arguments.parsers.StringArgumentParser;
 import dev.hugog.minecraft.dev_command.commands.BukkitDevCommand;
 import dev.hugog.minecraft.dev_command.commands.data.BukkitCommandData;
 import io.github.hugo1307.fallgates.FallGates;
@@ -21,7 +21,7 @@ import java.util.List;
 @AutoValidation
 @Command(alias = "delete", description = "Delete an existing fall.", permission = "fallgates.command.delete", isPlayerOnly = true)
 @Arguments({
-        @Argument(name = "id", description = "The ID of the fall to delete.", position = 0, parser = IntegerArgumentParser.class)
+        @Argument(name = "id", description = "The ID of the fall to delete.", position = 0, parser = StringArgumentParser.class)
 })
 @Dependencies(dependencies = {FallGates.class, ServiceAccessor.class})
 public class FallDeleteCommand extends BukkitDevCommand {
@@ -40,11 +40,11 @@ public class FallDeleteCommand extends BukkitDevCommand {
 
     @Override
     public void execute() {
-        long fallId = (int) getArgumentParser(0).parse().orElseThrow();
+        String fallId = (String) getArgumentParser(0).parse().orElseThrow();
         Player player = (Player) getCommandSender();
 
         if (!fallService.exists(fallId)) {
-            messageService.sendMessage(player, Message.FALL_NOT_FOUND, String.valueOf(fallId));
+            messageService.sendMessage(player, Message.FALL_NOT_FOUND, fallId);
             return;
         }
 

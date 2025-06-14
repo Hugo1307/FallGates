@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class FallRepository extends AbstractRepository<Long, FallModel> {
+public class FallRepository extends AbstractRepository<String, FallModel> {
 
     @Inject
     public FallRepository(HibernateHandler dataHandler) {

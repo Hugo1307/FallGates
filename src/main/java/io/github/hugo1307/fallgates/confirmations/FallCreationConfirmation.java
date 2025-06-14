@@ -32,7 +32,7 @@ public class FallCreationConfirmation extends PluginConfirmation {
 
     @Override
     public void onConfirm(Player player) {
-        if (fallService.existsByName(fallToCreate.getName())) {
+        if (fallService.exists(fallToCreate.getId())) {
             messageService.sendMessage(player, Message.FALL_CREATION_ALREADY_EXISTS_NAME, fallToCreate.getName());
             return;
         }

@@ -18,6 +18,7 @@ import io.github.hugo1307.fallgates.services.ConfirmationService;
 import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
+import io.github.hugo1307.fallgates.utils.StringSanitizeUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -78,11 +79,6 @@ public class FallCreateCommand extends BukkitDevCommand {
                 .map(parser -> ((IntegerArgumentParser) parser).parse().orElse(DEFAULT_SIZE))
                 .orElse(DEFAULT_SIZE);
 
-        if (fallService.existsByName(fallName)) {
-            messageService.sendMessage(player, Message.FALL_CREATION_ALREADY_EXISTS_NAME, fallName);
-            return;
-        }
-
         Location schematicLocation = player.getLocation().clone().add(0, 1, 0);
         if (!schematicsService.isSchematicAvailable(schematicName)) {
             messageService.sendMessage(player, Message.FALL_CREATION_INVALID_SCHEMATIC, schematicName);
@@ -99,8 +95,13 @@ public class FallCreateCommand extends BukkitDevCommand {
             return;
         }
 
-        Fall fallToCreate = new Fall(null, fallName, Position.fromBukkitLocation(schematicLocation), material, xSize, zSize);
+        Fall fallToCreate = Fall.createNew(fallName, Position.fromBukkitLocation(schematicLocation), material, xSize, zSize);
         fallToCreate.setSchematic(schematic);
+
+        if (fallService.exists(fallToCreate.getId())) {
+            messageService.sendMessage(player, Message.FALL_CREATION_ALREADY_EXISTS_NAME, fallName);
+            return;
+        }
 
         FallCreationConfirmation fallCreationConfirmation = new FallCreationConfirmation(plugin, getDependency(ServiceAccessor.class), fallToCreate);
         confirmationService.addConfirmation(player, fallCreationConfirmation);

@@ -1,6 +1,7 @@
 package io.github.hugo1307.fallgates.data.domain;
 
 import io.github.hugo1307.fallgates.data.models.FallModel;
+import io.github.hugo1307.fallgates.utils.StringSanitizeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +13,8 @@ import org.bukkit.Material;
 @AllArgsConstructor
 public class Fall implements DomainEntity<FallModel> {
 
-    private Long id;
-    private Long targetFallId;
+    private String id;
+    private String targetFallId;
     private String name;
     private Position position;
     private Material material;
@@ -26,12 +27,22 @@ public class Fall implements DomainEntity<FallModel> {
     private FallGateSchematic schematic;
     private boolean isOpen;
 
-    public Fall(Long id, String name, Position position, Material material, int xSize, int zSize) {
-        this(id, null, name, position, material, xSize, zSize, null, false);
+    public Fall(String id, String targetFallId, String name, Position position, Material material, int xSize, int zSize) {
+        this(id, targetFallId, name, position, material, xSize, zSize, null, false);
     }
 
-    public Fall(Long id, Long targetFallId, String name, Position position, Material material, int xSize, int zSize) {
-        this(id, targetFallId, name, position, material, xSize, zSize, null, false);
+    /**
+     * Create a new Fall instance with a generated ID.
+     *
+     * @param name     the name of the fall
+     * @param position the position of the fall
+     * @param material the material of the fall
+     * @param xSize    the size of the fall on X axis
+     * @param zSize    the size of the fall on Z axis
+     * @return a new Fall instance with a generated ID
+     */
+    public static Fall createNew(String name, Position position, Material material, int xSize, int zSize) {
+        return new Fall(StringSanitizeUtils.sanitize(name).toLowerCase(), null, name, position, material, xSize, zSize);
     }
 
     /**
@@ -40,7 +51,7 @@ public class Fall implements DomainEntity<FallModel> {
      * @return true if the fall is connected to another fall, false otherwise.
      */
     public boolean isConnected() {
-        return targetFallId != null && targetFallId > 0;
+        return targetFallId != null;
     }
 
     /**

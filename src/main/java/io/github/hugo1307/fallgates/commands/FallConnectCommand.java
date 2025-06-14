@@ -1,7 +1,7 @@
 package io.github.hugo1307.fallgates.commands;
 
 import dev.hugog.minecraft.dev_command.annotations.*;
-import dev.hugog.minecraft.dev_command.arguments.parsers.IntegerArgumentParser;
+import dev.hugog.minecraft.dev_command.arguments.parsers.StringArgumentParser;
 import dev.hugog.minecraft.dev_command.commands.BukkitDevCommand;
 import dev.hugog.minecraft.dev_command.commands.data.BukkitCommandData;
 import io.github.hugo1307.fallgates.FallGates;
@@ -14,11 +14,12 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+
 @AutoValidation
 @Command(alias = "connect", description = "Connect a fall to another one.", permission = "fallgates.command.connect")
 @Arguments({
-        @Argument(name = "sourceFall", description = "The id of the source fall.", position = 0, parser = IntegerArgumentParser.class),
-        @Argument(name = "targetFall", description = "The id of the target fall.", position = 1, parser = IntegerArgumentParser.class)
+        @Argument(name = "sourceFall", description = "The id of the source fall.", position = 0, parser = StringArgumentParser.class),
+        @Argument(name = "targetFall", description = "The id of the target fall.", position = 1, parser = StringArgumentParser.class)
 })
 @Dependencies(dependencies = {FallGates.class, ServiceAccessor.class})
 public class FallConnectCommand extends BukkitDevCommand {
@@ -35,16 +36,16 @@ public class FallConnectCommand extends BukkitDevCommand {
 
     @Override
     public void execute() {
-        long sourceFallId = (int) getArgumentParser(0).parse().orElseThrow();
-        long targetFallId = (int) getArgumentParser(1).parse().orElseThrow();
+        String sourceFallId = (String) getArgumentParser(0).parse().orElseThrow();
+        String targetFallId = (String) getArgumentParser(1).parse().orElseThrow();
 
         if (!fallService.exists(sourceFallId)) {
-            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, String.valueOf(sourceFallId));
+            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, sourceFallId);
             return;
         }
 
         if (!fallService.exists(targetFallId)) {
-            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, String.valueOf(targetFallId));
+            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, targetFallId);
             return;
         }
 
