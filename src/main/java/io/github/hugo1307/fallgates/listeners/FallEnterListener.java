@@ -30,7 +30,7 @@ public class FallEnterListener implements Listener {
 
         Player player = event.getPlayer();
         fallService.getOpenFalls().forEach(openFall -> {
-            if (openFall.isInside(event.getTo()) && openFall.isConnected() && openFall.getPosition().getY() - event.getTo().getY() >= 10) {
+            if (openFall.isInside(event.getTo()) && openFall.isConnected() && openFall.getPosition().getY() - event.getTo().getY() >= 8) {
                 fallService.getFallById(openFall.getTargetFallId()).ifPresent(targetFall -> teleportService.teleportToFall(player, targetFall));
             }
         });
