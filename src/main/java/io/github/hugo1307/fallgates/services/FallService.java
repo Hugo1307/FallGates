@@ -102,12 +102,13 @@ public final class FallService implements Service {
             return CompletableFuture.failedFuture(new IllegalStateException("Fall is not connected to another fall."));
         }
 
+        long targetFallId = sourceFall.getTargetFallId();
         sourceFall.setTargetFallId(null);
 
         return updateFall(sourceFall)
                 .thenRun(() -> {
-                    if (exists(sourceFall.getTargetFallId())) {
-                        Fall targetFall = getFallById(sourceFall.getTargetFallId()).orElseThrow();
+                    if (exists(targetFallId)) {
+                        Fall targetFall = getFallById(targetFallId).orElseThrow();
                         disconnectFall(targetFall);
                     }
                 });
