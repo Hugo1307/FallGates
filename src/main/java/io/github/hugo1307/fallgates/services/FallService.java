@@ -62,6 +62,17 @@ public final class FallService implements Service {
     }
 
     /**
+     * Check if a Fall exists by its name.
+     *
+     * @param name the name of the Fall to check
+     * @return true if the Fall exists, false otherwise
+     */
+    public boolean existsByName(String name) {
+        return fallsCache.getAll().stream()
+                .anyMatch(fall -> fall.getName().equalsIgnoreCase(name));
+    }
+
+    /**
      * Get the closest Fall to a given location within a specified radius.
      *
      * @param location the location to search from

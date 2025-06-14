@@ -12,6 +12,7 @@ commands:
     positionSet: "Your fall position has been set. Type §e{0} §7to confirm and create your fall."
     invalidSchematic: "Invalid schematic provided §c{0}§7. Please ensure the file exists and is a valid schematic."
     errorLoadingSchematic: "An error occurred while loading the schematic §c{0}§7."
+    alreadyExistsWithName: "A fall with the name §c{0} §7already exists. Please choose a different name."
 
   connect:
     alreadyConnected: "At least one of the falls is already connected to another fall."

@@ -15,6 +15,7 @@ import io.github.hugo1307.fallgates.exceptions.SchematicException;
 import io.github.hugo1307.fallgates.messages.Message;
 import io.github.hugo1307.fallgates.messages.MessageService;
 import io.github.hugo1307.fallgates.services.ConfirmationService;
+import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import org.bukkit.Location;
@@ -41,7 +42,7 @@ import java.util.stream.IntStream;
 public class FallCreateCommand extends BukkitDevCommand {
 
     private final FallGates plugin;
-    private final ServiceAccessor serviceAccessor;
+    private final FallService fallService;
     private final ConfirmationService confirmationService;
     private final MessageService messageService;
     private final SchematicsService schematicsService;
@@ -52,10 +53,11 @@ public class FallCreateCommand extends BukkitDevCommand {
         super(commandData, commandSender, args);
 
         this.plugin = getDependency(FallGates.class);
-        this.serviceAccessor = getDependency(ServiceAccessor.class);
-        this.confirmationService = this.serviceAccessor.accessService(ConfirmationService.class);
-        this.messageService = this.serviceAccessor.accessService(MessageService.class);
-        this.schematicsService = this.serviceAccessor.accessService(SchematicsService.class);
+        ServiceAccessor serviceAccessor = getDependency(ServiceAccessor.class);
+        this.fallService = serviceAccessor.accessService(FallService.class);
+        this.confirmationService = serviceAccessor.accessService(ConfirmationService.class);
+        this.messageService = serviceAccessor.accessService(MessageService.class);
+        this.schematicsService = serviceAccessor.accessService(SchematicsService.class);
     }
 
     @Override
@@ -75,8 +77,13 @@ public class FallCreateCommand extends BukkitDevCommand {
         int zSize = getOptionalArgumentParser(4)
                 .map(parser -> ((IntegerArgumentParser) parser).parse().orElse(DEFAULT_SIZE))
                 .orElse(DEFAULT_SIZE);
-        Location schematicLocation = player.getLocation().clone().add(0, 1, 0);
 
+        if (fallService.existsByName(fallName)) {
+            messageService.sendMessage(player, Message.FALL_CREATION_ALREADY_EXISTS_NAME, fallName);
+            return;
+        }
+
+        Location schematicLocation = player.getLocation().clone().add(0, 1, 0);
         if (!schematicsService.isSchematicAvailable(schematicName)) {
             messageService.sendMessage(player, Message.FALL_CREATION_INVALID_SCHEMATIC, schematicName);
             return;
@@ -95,8 +102,7 @@ public class FallCreateCommand extends BukkitDevCommand {
         Fall fallToCreate = new Fall(null, fallName, Position.fromBukkitLocation(schematicLocation), material, xSize, zSize);
         fallToCreate.setSchematic(schematic);
 
-        FallCreationConfirmation fallCreationConfirmation = new FallCreationConfirmation(plugin, serviceAccessor, fallToCreate);
-
+        FallCreationConfirmation fallCreationConfirmation = new FallCreationConfirmation(plugin, getDependency(ServiceAccessor.class), fallToCreate);
         confirmationService.addConfirmation(player, fallCreationConfirmation);
         messageService.sendMessage(player, Message.FALL_CREATION_POSITION_SET, "/fg confirm");
     }

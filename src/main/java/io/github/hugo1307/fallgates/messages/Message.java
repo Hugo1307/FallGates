@@ -18,6 +18,7 @@ public enum Message {
     FALL_CREATION_SUCCESS("commands.create.success"),
     FALL_CREATION_INVALID_SCHEMATIC("commands.create.invalidSchematic"),
     FALL_CREATION_ERROR_LOADING_SCHEMATIC("commands.create.errorLoadingSchematic"),
+    FALL_CREATION_ALREADY_EXISTS_NAME("commands.create.alreadyExistsWithName"),
 
     FALL_CONNECT_ALREADY_CONNECTED("commands.connect.alreadyConnected"),
     FALL_CONNECT_SUCCESS("commands.connect.success"),
