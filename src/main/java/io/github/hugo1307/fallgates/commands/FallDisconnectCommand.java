@@ -13,6 +13,7 @@ import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AutoValidation
 @Command(alias = "disconnect", description = "Disconnect a fall from another one.", permission = "fallgates.command.disconnect")
@@ -52,7 +53,13 @@ public class FallDisconnectCommand extends BukkitDevCommand {
     }
 
     @Override
-    public List<String> onTabComplete(String[] strings) {
+    public List<String> onTabComplete(String[] args) {
+        if (args.length == 1) {
+            return fallService.getAllFalls().stream()
+                    .filter(Fall::isConnected)
+                    .map(Fall::getId)
+                    .collect(Collectors.toUnmodifiableList());
+        }
         return List.of();
     }
 }

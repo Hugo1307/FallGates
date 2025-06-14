@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AutoValidation
 @Command(alias = "delete", description = "Delete an existing fall.", permission = "fallgates.command.delete", isPlayerOnly = true)
@@ -64,7 +65,12 @@ public class FallDeleteCommand extends BukkitDevCommand {
     }
 
     @Override
-    public List<String> onTabComplete(String[] strings) {
+    public List<String> onTabComplete(String[] args) {
+        if (args.length == 1) {
+            return fallService.getAllFalls().stream()
+                    .map(Fall::getId)
+                    .collect(Collectors.toUnmodifiableList());
+        }
         return List.of();
     }
 

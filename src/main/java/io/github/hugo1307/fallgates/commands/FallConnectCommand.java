@@ -13,6 +13,7 @@ import io.github.hugo1307.fallgates.services.ServiceAccessor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @AutoValidation
@@ -62,7 +63,19 @@ public class FallConnectCommand extends BukkitDevCommand {
     }
 
     @Override
-    public List<String> onTabComplete(String[] strings) {
+    public List<String> onTabComplete(String[] args) {
+        List<String> fallIds = fallService.getAllFalls().stream()
+                .filter(fall -> !fall.isConnected())
+                .map(Fall::getId)
+                .collect(Collectors.toUnmodifiableList());
+
+        if (args.length == 1) {
+            return fallIds;
+        } else if (args.length == 2) {
+            return fallIds.stream()
+                    .filter(id -> !id.equals(args[0]))
+                    .collect(Collectors.toUnmodifiableList());
+        }
         return List.of();
     }
 }

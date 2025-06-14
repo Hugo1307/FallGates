@@ -18,7 +18,6 @@ import io.github.hugo1307.fallgates.services.ConfirmationService;
 import io.github.hugo1307.fallgates.services.FallService;
 import io.github.hugo1307.fallgates.services.SchematicsService;
 import io.github.hugo1307.fallgates.services.ServiceAccessor;
-import io.github.hugo1307.fallgates.utils.StringSanitizeUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
