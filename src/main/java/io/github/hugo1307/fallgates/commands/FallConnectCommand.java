@@ -39,12 +39,12 @@ public class FallConnectCommand extends BukkitDevCommand {
         long targetFallId = (int) getArgumentParser(1).parse().orElseThrow();
 
         if (!fallService.exists(sourceFallId)) {
-            messageService.sendMessage(getCommandSender(), Message.FALL_CONNECT_NO_FALL, String.valueOf(sourceFallId));
+            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, String.valueOf(sourceFallId));
             return;
         }
 
         if (!fallService.exists(targetFallId)) {
-            messageService.sendMessage(getCommandSender(), Message.FALL_CONNECT_NO_FALL, String.valueOf(targetFallId));
+            messageService.sendMessage(getCommandSender(), Message.FALL_NOT_FOUND, String.valueOf(targetFallId));
             return;
         }
 

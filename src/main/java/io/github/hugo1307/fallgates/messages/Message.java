@@ -19,9 +19,11 @@ public enum Message {
     FALL_CREATION_INVALID_SCHEMATIC("commands.create.invalidSchematic"),
     FALL_CREATION_ERROR_LOADING_SCHEMATIC("commands.create.errorLoadingSchematic"),
 
-    FALL_CONNECT_NO_FALL("commands.connect.noFall"),
     FALL_CONNECT_ALREADY_CONNECTED("commands.connect.alreadyConnected"),
     FALL_CONNECT_SUCCESS("commands.connect.success"),
+
+    FALL_DISCONNECT_NOT_CONNECTED("commands.disconnect.notConnected"),
+    FALL_DISCONNECT_SUCCESS("commands.disconnect.success"),
 
     FALL_DELETE_SUCCESS("commands.delete.success"),
 

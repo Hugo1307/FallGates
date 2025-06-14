@@ -14,9 +14,12 @@ commands:
     errorLoadingSchematic: "An error occurred while loading the schematic §c{0}§7."
 
   connect:
-    noFall: "No fall found with the id §c{0}§7."
     alreadyConnected: "At least one of the falls is already connected to another fall."
     success: "The fall §e{0} §7has been successfully connected to the fall §e{1}§7."
+
+  disconnect:
+    notConnected: "The fall §e{0} §7is not connected to any other fall."
+    success: "The fall §e{0} §7has been successfully disconnected."
 
   delete:
     success: "The fall §e{0} §7has been successfully deleted."

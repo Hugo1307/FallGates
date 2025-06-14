@@ -88,6 +88,7 @@ public class FallCreateCommand extends BukkitDevCommand {
         } catch (SchematicException e) {
             messageService.sendMessage(player, Message.FALL_CREATION_ERROR_LOADING_SCHEMATIC, schematicName);
             plugin.getLogger().severe("Failed to load schematic: Caused by: " + e.getCause());
+            e.printStackTrace();
             return;
         }
 

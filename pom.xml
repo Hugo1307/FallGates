@@ -6,7 +6,7 @@
 
     <groupId>io.github.hugo1307</groupId>
     <artifactId>fallgates</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-beta</version>
     <packaging>jar</packaging>
 
     <name>fallgates</name>
