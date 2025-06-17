@@ -69,6 +69,7 @@ public final class FallService implements Service {
      */
     public Optional<Fall> getClosestFall(Location location) {
         return fallsCache.getAll().stream()
+                .filter(fall -> fall.getPosition().toBukkitLocation().getWorld() == location.getWorld())
                 .min(Comparator.comparingDouble(fall -> fall.getPosition().toBukkitLocation().distance(location)));
     }
 

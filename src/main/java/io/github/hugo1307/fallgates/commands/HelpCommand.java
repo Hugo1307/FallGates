@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AutoValidation
-@Command(alias = "help", description = "Provides a help page with all commands.", permission = "fallgates.command.help", isPlayerOnly = true)
+@Command(alias = "help", description = "Provides a help page with all commands.", permission = "fallgates.command.help")
 @Dependencies(dependencies = {ServiceAccessor.class})
 public class HelpCommand extends BukkitDevCommand {
 

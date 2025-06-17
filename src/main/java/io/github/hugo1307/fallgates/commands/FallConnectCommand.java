@@ -15,7 +15,6 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @AutoValidation
 @Command(alias = "connect", description = "Connect a fall to another one.", permission = "fallgates.command.connect")
 @Arguments({
