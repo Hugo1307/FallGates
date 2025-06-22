@@ -3,6 +3,8 @@ package io.github.hugo1307.fallgates.services;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.hugo1307.fallgates.FallGates;
+import io.github.hugo1307.fallgates.config.ConfigHandler;
+import io.github.hugo1307.fallgates.config.entities.FallsConfigEntry;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,6 +17,7 @@ import java.util.*;
 public class TeleportService implements Service {
 
     private final FallGates plugin;
+    private final ConfigHandler configHandler;
 
     /**
      * Set to keep track of players who are currently teleporting.
@@ -24,8 +27,9 @@ public class TeleportService implements Service {
     private static final Map<UUID, Long> teleportingPlayers = new HashMap<>();
 
     @Inject
-    public TeleportService(FallGates plugin) {
+    public TeleportService(FallGates plugin, ConfigHandler configHandler) {
         this.plugin = plugin;
+        this.configHandler = configHandler;
     }
 
     /**
@@ -39,14 +43,18 @@ public class TeleportService implements Service {
     public void teleportToFall(Player player, Fall fall) {
         Location currentLocation = player.getLocation();
         Location targetLocation = fall.getPosition().toBukkitLocation().clone();
+        int fallHeight = configHandler.getValue(FallsConfigEntry.FALL_HEIGHT, Integer.class);
 
-        targetLocation.add(0, -6, 0);
+        targetLocation.add(0, -fallHeight, 0);
         targetLocation.setYaw(currentLocation.getYaw());
         targetLocation.setPitch(currentLocation.getPitch());
 
         plugin.getServer().getScheduler().runTask(plugin, () -> {
+            double verticalPushForce = configHandler.getValue(FallsConfigEntry.VERTICAL_FORCE, Double.class) * fallHeight;
+            double horizontalPushForce = configHandler.getValue(FallsConfigEntry.HORIZONTAL_FORCE, Double.class) * (Math.max(3, fall.getZSize()) - 2);
+
             player.teleport(targetLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            player.setVelocity(new Vector(0, 2, 0.3 * (Math.max(3, fall.getXSize()) - 2)));
+            player.setVelocity(new Vector(0, verticalPushForce, horizontalPushForce));
             teleportingPlayers.put(player.getUniqueId(), System.currentTimeMillis());
         });
     }

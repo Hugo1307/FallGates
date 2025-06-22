@@ -43,8 +43,10 @@ public class FallInteractListener implements Listener {
         }
 
         Fall closestFall = closestFallOptional.get();
+        int closestFallMaxSize = Math.max(closestFall.getXSize(), closestFall.getZSize());
         // If the pressure plate is too far from the closest fall AND the pressure plate is not inside the closest fall, ignore
-        if (!closestFall.isInside(pressurePlateLocation) && closestFall.getPosition().toBukkitLocation().distance(pressurePlateLocation) > 5) {
+        if (!closestFall.isInside(pressurePlateLocation)
+                && closestFall.getPosition().toBukkitLocation().distance(pressurePlateLocation) > closestFallMaxSize * 2) {
             return;
         }
 
