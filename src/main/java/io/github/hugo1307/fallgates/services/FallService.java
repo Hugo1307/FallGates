@@ -2,6 +2,8 @@ package io.github.hugo1307.fallgates.services;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.github.hugo1307.fallgates.config.ConfigHandler;
+import io.github.hugo1307.fallgates.config.entities.FallsConfigEntry;
 import io.github.hugo1307.fallgates.data.cache.FallsCache;
 import io.github.hugo1307.fallgates.data.domain.Fall;
 import io.github.hugo1307.fallgates.data.models.FallModel;
@@ -19,14 +21,16 @@ public final class FallService implements Service {
 
     private final FallRepository fallRepository;
     private final FallsCache fallsCache;
+    private final ConfigHandler configHandler;
 
     private final Map<Fall, Long> fallsToClose = new HashMap<>();
     private final Set<Fall> openFalls = new HashSet<>();
 
     @Inject
-    public FallService(FallRepository fallRepository, FallsCache fallsCache) {
+    public FallService(FallRepository fallRepository, FallsCache fallsCache, ConfigHandler configHandler) {
         this.fallRepository = fallRepository;
         this.fallsCache = fallsCache;
+        this.configHandler = configHandler;
     }
 
     /**
@@ -171,10 +175,11 @@ public final class FallService implements Service {
      */
     public void processClosingFalls() {
         long currentTime = System.currentTimeMillis();
+        int closeDelay = configHandler.getValue(FallsConfigEntry.CLOSE_DELAY, Integer.class);
         fallsToClose.entrySet().removeIf(entry -> {
             Fall fall = entry.getKey();
             long scheduledTime = entry.getValue();
-            if (currentTime - scheduledTime >= 5000) { // 5 seconds
+            if (currentTime - scheduledTime >= closeDelay * 1000L) {
                 closeFallNow(fall);
                 return true;
             }

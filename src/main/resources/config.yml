@@ -6,7 +6,7 @@ database:
 
 # General Falls configuration
 falls:
-  openTime: 5                     # Time (in seconds) to keep the fall open before closing
+  closeDelay: 5                   # Time (in seconds) to keep the fall open before closing
   fallHeight: 8                   # Height to trigger the teleportation when falling through a gate
   verticalForce: 0.2              # Vertical push force when falling through a gate
   horizontalForce: 0.2            # Horizontal push force when falling through a gate

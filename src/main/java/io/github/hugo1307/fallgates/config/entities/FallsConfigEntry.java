@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum FallsConfigEntry implements ConfigEntry {
-    OPEN_TIME("openTime"),
+    CLOSE_DELAY("closeDelay"),
     FALL_HEIGHT("fallHeight"),
     VERTICAL_FORCE("verticalForce"),
     HORIZONTAL_FORCE("horizontalForce");
